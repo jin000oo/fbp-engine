@@ -49,4 +49,21 @@ class PrintNodeTest {
         Assertions.assertNotNull(node);
     }
 
+    @Test
+    @DisplayName("InputPort 조회")
+    void test4() {
+        // getInputPort()가 null이 아님
+        PrintNode printNode = new PrintNode("printer-1");
+        Assertions.assertNotNull(printNode.getInputPort());
+    }
+
+    @Test
+    @DisplayName("InputPort를 통한 수신")
+    void test5() {
+        // InputPort의 receive()를 호출하면 process()가 실행됨
+        PrintNode printNode = new PrintNode("printer-1");
+        Message message = new Message(Map.of("test", 1));
+        Assertions.assertDoesNotThrow(() -> printNode.getInputPort().receive(message));
+    }
+
 }

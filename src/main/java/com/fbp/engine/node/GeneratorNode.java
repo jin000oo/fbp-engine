@@ -12,17 +12,24 @@
 
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.DefaultOutputPort;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.core.OutputPort;
 import com.fbp.engine.message.Message;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+import lombok.Getter;
 
-@RequiredArgsConstructor
+@Getter
 public class GeneratorNode implements Node {
 
     private final String id;
 
     private final OutputPort outputPort;
+
+    public GeneratorNode(String id) {
+        this.id = id;
+        this.outputPort = new DefaultOutputPort("out");
+    }
 
     @Override
     public String getId() {
@@ -31,6 +38,12 @@ public class GeneratorNode implements Node {
 
     @Override
     public void process(Message message) {
+        // GeneratorNode는 외부 메시지를 처리하지 않으므로 빈 구현
+    }
+
+    public void generate(String key, Object value) {
+        Message message = new Message(Map.of(key, value));
+
         outputPort.send(message);
     }
 

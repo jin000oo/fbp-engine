@@ -13,21 +13,32 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.DefaultInputPort;
+import com.fbp.engine.core.DefaultOutputPort;
 import com.fbp.engine.core.InputPort;
 import com.fbp.engine.core.Node;
+import com.fbp.engine.core.OutputPort;
 import com.fbp.engine.message.Message;
 import lombok.Getter;
 
 @Getter
-public class PrintNode implements Node {
+public class FilterNode implements Node {
 
     private final String id;
 
+    private final String key;
+
+    private final double threshold;
+
     private final InputPort inputPort;
 
-    public PrintNode(String id) {
+    private final OutputPort outputPort;
+
+    public FilterNode(String id, String key, double threshold) {
         this.id = id;
+        this.key = key;
+        this.threshold = threshold;
         this.inputPort = new DefaultInputPort("in", this);
+        this.outputPort = new DefaultOutputPort("out");
     }
 
     @Override
@@ -37,7 +48,19 @@ public class PrintNode implements Node {
 
     @Override
     public void process(Message message) {
-        System.out.printf("[%s] %s%n", id, message.getPayload());
+        if (!message.hasKey(key)) {
+            return;
+        }
+
+        Object rawValue = message.get(key);
+
+        if (rawValue instanceof Number) {
+            double value = ((Number) rawValue).doubleValue();
+
+            if (value >= threshold) {
+                outputPort.send(message);
+            }
+        }
     }
 
 }

@@ -16,8 +16,10 @@ import com.fbp.engine.message.Message;
 
 public interface OutputPort {
 
-    void send(Message message);
+    String getName();
 
     void connect(Connection connection);
+
+    void send(Message message);
 
 }

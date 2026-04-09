@@ -10,34 +10,26 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.node;
+package com.fbp.engine.core;
 
-import com.fbp.engine.core.DefaultInputPort;
-import com.fbp.engine.core.InputPort;
-import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Getter
-public class PrintNode implements Node {
+@RequiredArgsConstructor
+public class DefaultInputPort implements InputPort {
 
-    private final String id;
+    private final String name;
 
-    private final InputPort inputPort;
+    private final Node owner;
 
-    public PrintNode(String id) {
-        this.id = id;
-        this.inputPort = new DefaultInputPort("in", this);
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
-    public void process(Message message) {
-        System.out.printf("[%s] %s%n", id, message.getPayload());
+    public void receive(Message message) {
+        owner.process(message);
     }
 
 }
