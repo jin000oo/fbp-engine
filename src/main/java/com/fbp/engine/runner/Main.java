@@ -19,7 +19,6 @@ import com.fbp.engine.node.FilterNode;
 import com.fbp.engine.node.GeneratorNode;
 import com.fbp.engine.node.PrintNode;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class Main {
@@ -52,7 +51,7 @@ public class Main {
         GeneratorNode generator = new GeneratorNode("generator-1");
         PrintNode printer = new PrintNode("printer-1");
 
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
         connection.setTarget(printer.getInputPort());
 
         generator.getOutputPort().connect(connection);
@@ -65,8 +64,8 @@ public class Main {
         PrintNode printer1 = new PrintNode("printer-1");
         PrintNode printer2 = new PrintNode("printer-2");
 
-        Connection connection1 = new Connection("connection-1", new LinkedList<>());
-        Connection connection2 = new Connection("connection-2", new LinkedList<>());
+        Connection connection1 = new Connection("connection-1", 10);
+        Connection connection2 = new Connection("connection-2", 10);
         connection1.setTarget(printer1.getInputPort());
         connection2.setTarget(printer2.getInputPort());
 
@@ -81,8 +80,8 @@ public class Main {
         FilterNode filter = new FilterNode("filter-1", "temperature", 35.0);
         PrintNode printer = new PrintNode("printer-1");
 
-        Connection connection1 = new Connection("connection-1", new LinkedList<>());
-        Connection connection2 = new Connection("connection-2", new LinkedList<>());
+        Connection connection1 = new Connection("connection-1", 10);
+        Connection connection2 = new Connection("connection-2", 10);
         connection1.setTarget(filter.getInputPort());
         connection2.setTarget(printer.getInputPort());
 

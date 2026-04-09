@@ -13,7 +13,6 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
-import java.util.LinkedList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ class GeneratorNodeTest {
         // generate("key", "value") 호출 시 OutputPort로 메시지가 전달됨
         GeneratorNode generator = new GeneratorNode("generator-1");
 
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
         generator.getOutputPort().connect(connection);
 
         generator.generate("key", "value");
@@ -40,7 +39,7 @@ class GeneratorNodeTest {
         // 전달된 메시지의 페이로드에 지정한 key-value가 포함됨
         GeneratorNode generator = new GeneratorNode("generator-1");
 
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
         generator.getOutputPort().connect(connection);
 
         generator.generate("key", "value");
@@ -63,7 +62,7 @@ class GeneratorNodeTest {
         // 3번 호출하면 3개의 메시지가 순서대로 전달됨
         GeneratorNode generator = new GeneratorNode("generator-1");
 
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
         generator.getOutputPort().connect(connection);
 
         generator.generate("key1", "value1");

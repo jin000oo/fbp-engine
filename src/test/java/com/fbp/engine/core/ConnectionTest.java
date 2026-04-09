@@ -14,7 +14,6 @@ package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -35,7 +34,7 @@ class ConnectionTest {
     @DisplayName("deliver 후 target 수신")
     void test1() {
         // deliver()한 메시지가 target InputPort의 receive()를 통해 노드에 전달됨
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
         connection.setTarget(inputPort);
 
         Message message = new Message(Map.of("key", "value"));
@@ -48,7 +47,7 @@ class ConnectionTest {
     @DisplayName("target 미설정 시 동작")
     void test2() {
         // target이 null인 상태에서 deliver()해도 예외가 발생하지 않음
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
 
         Message message = new Message(Map.of("key", "value"));
 
@@ -59,7 +58,7 @@ class ConnectionTest {
     @DisplayName("버퍼 크기 확인")
     void test3() {
         // deliver() 후 getBufferSize()가 예상값과 일치
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
 
         Message message = new Message(Map.of("key", "value"));
         connection.deliver(message);
@@ -71,7 +70,7 @@ class ConnectionTest {
     @DisplayName("다수 메시지 순서 보장")
     void test4() {
         // 여러 메시지를 deliver()하면 전달 순서가 보장됨
-        Connection connection = new Connection("connection-1", new LinkedList<>());
+        Connection connection = new Connection("connection-1", 10);
 
         Message message1 = new Message(Map.of("test", 1));
         Message message2 = new Message(Map.of("test", 2));

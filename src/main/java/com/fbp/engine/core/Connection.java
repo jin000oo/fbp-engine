@@ -13,7 +13,8 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,20 +25,36 @@ public class Connection {
 
     private final String id;
 
-    private final Queue<Message> buffer;
+    private final BlockingQueue<Message> buffer;
 
     @Setter
     private InputPort target;
 
+    public Connection(String id) {
+        this(id, 100);
+    }
+
+    public Connection(String id, int capacity) {
+        this.id = id;
+        this.buffer = new LinkedBlockingQueue<>(capacity);
+    }
+
     public void deliver(Message message) {
-        buffer.add(message);
+        try {
+            buffer.put(message);
 
-        if (target != null) {
-            Message deliverMessage = buffer.poll();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-            if (deliverMessage != null) {
-                target.receive(deliverMessage);
-            }
+    public Message poll() {
+        try {
+            return buffer.take();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         }
     }
 
