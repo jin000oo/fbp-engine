@@ -23,18 +23,26 @@ import java.util.Map;
 
 public class Main {
 
+    static volatile boolean running = true;
+
     public static void main(String[] args) {
-        System.out.println("===== 과제 2-7 =====");
-        test1();
+//        System.out.println("===== 과제 2-7 =====");
+//        test1();
 
-        System.out.println("===== 과제 3-7 =====");
-        test2();
+//        System.out.println("===== 과제 3-7 =====");
+//        test2();
 
-        System.out.println("===== 과제 3-8 =====");
-        test3();
+//        System.out.println("===== 과제 3-8 =====");
+//        test3();
 
-        System.out.println("===== 과제 3-10 =====");
-        test4();
+//        System.out.println("===== 과제 3-10 =====");
+//        test4();
+
+//        System.out.println("===== 과제 4-4 =====");
+//        test5();
+
+        System.out.println("===== 과제 4-5 =====");
+        test6();
     }
 
     private static void test1() {
@@ -90,6 +98,134 @@ public class Main {
 
         generator.generate("temperature", 25.0);
         generator.generate("temperature", 35.0);
+    }
+
+    private static void test5() {
+        GeneratorNode generator = new GeneratorNode("generator-1");
+        PrintNode printer = new PrintNode("printer-1");
+
+        Connection connection = new Connection("connection");
+        connection.setTarget(printer.getInputPort());
+
+        generator.getOutputPort().connect(connection);
+
+        Thread producer = new Thread(() -> {
+            for (int i = 1; i <= 5; i++) {
+                System.out.printf("[test5 - Producer] 데이터 생성 (%d/5)%n", i);
+                generator.generate("count", i);
+
+                try {
+                    Thread.sleep(1000);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            System.out.println("[test5 - Producer] 생산 완료");
+        });
+
+        Thread consumer = new Thread(() -> {
+            System.out.println("[test5 - Consumer] 대기 시작");
+
+            while (true) {
+                Message message = connection.poll();
+
+                if (message != null) {
+                    printer.getInputPort().receive(message);
+                }
+            }
+        });
+
+        producer.start();
+        consumer.start();
+    }
+
+    private static void test6() {
+        GeneratorNode generator = new GeneratorNode("generator-1");
+        FilterNode filter = new FilterNode("filter-1", "temperature", 35.0);
+        PrintNode printer = new PrintNode("printer-1");
+
+        Connection connection1 = new Connection("connection-1");
+        Connection connection2 = new Connection("connection-2");
+        connection1.setTarget(filter.getInputPort());
+        connection2.setTarget(printer.getInputPort());
+
+        generator.getOutputPort().connect(connection1);
+        filter.getOutputPort().connect(connection2);
+
+        Thread filterThread = new Thread(() -> {
+            System.out.println("[test6 - Filter] 대기 시작");
+
+            while (running) {
+                Message message = connection1.poll();
+
+                if (message != null) {
+                    filter.getInputPort().receive(message);
+                }
+            }
+
+            System.out.println("[test6 - Filter] 스레드 종료");
+        });
+
+        Thread printerThread = new Thread(() -> {
+            System.out.println("[test6 - Printer] 대기 시작");
+
+            while (running) {
+                Message message = connection2.poll();
+
+                if (message != null) {
+                    printer.getInputPort().receive(message);
+
+                    System.out.printf("  -> [현재 connection-2 버퍼 사이즈: %d]%n", connection2.getBufferSize());
+
+                    try {
+                        Thread.sleep(1000);
+
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            System.out.println("[test6 - Printer] 스레드 종료");
+        });
+
+        Thread generatorThread = new Thread(() -> {
+            double[] testTemperatures = {32.5, 36.0, 29.0, 38.5, 35.0, 20.0, 39.0};
+
+            for (double testTemperature : testTemperatures) {
+                generator.generate("temperature", testTemperature);
+
+                try {
+                    Thread.sleep(100);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            System.out.println("[test6 - Generator] 생산 완료");
+
+            while (connection1.getBufferSize() > 0 || connection2.getBufferSize() > 0) {
+                try {
+                    Thread.sleep(500);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            System.out.println("[test6 - Generator] 모든 처리 완료");
+            running = false;
+
+            filterThread.interrupt();
+            printerThread.interrupt();
+        });
+
+        filterThread.start();
+        printerThread.start();
+        generatorThread.start();
     }
 
 }
