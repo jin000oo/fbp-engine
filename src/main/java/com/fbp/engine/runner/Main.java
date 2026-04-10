@@ -13,6 +13,7 @@
 package com.fbp.engine.runner;
 
 import com.fbp.engine.core.Connection;
+import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.FilterNode;
@@ -22,7 +23,9 @@ import com.fbp.engine.node.PrintNode;
 import com.fbp.engine.node.SplitNode;
 import com.fbp.engine.node.TimerNode;
 import com.fbp.engine.node.TransformNode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -57,8 +60,14 @@ public class Main {
 //        System.out.println("===== 과제 6-4 =====");
 //        test9();
 
-        System.out.println("===== 과제 6-5 =====");
-        test10();
+//        System.out.println("===== 과제 6-5 =====");
+//        test10();
+
+//        System.out.println("===== 과제 7-2 =====");
+//        test11();
+
+        System.out.println("===== 과제 7-3 =====");
+        test12();
     }
 
     private static void test1() {
@@ -535,6 +544,95 @@ public class Main {
         loggerThread.interrupt();
         filterThread.interrupt();
         printerThread.interrupt();
+    }
+
+    private static void test11() {
+        Flow flow = new Flow("flow-test");
+
+        flow.addNode(new TimerNode("timer-1", 1000))
+                .addNode(new LogNode("logger-1"))
+                .addNode(new FilterNode("filter-1", "tick", 3))
+                .addNode(new PrintNode("printer-1"));
+
+        flow.connect("timer-1", "out", "logger-1", "in")
+                .connect("logger-1", "out", "filter-1", "in")
+                .connect("filter-1", "out", "printer-1", "in");
+
+        runFlow(flow, 7000);
+    }
+
+    private static void test12() {
+        Flow flow = new Flow("split-flow");
+
+        flow.addNode(new TimerNode("timer-1", 500))
+                .addNode(new SplitNode("split-1", "tick", 3))
+                .addNode(new PrintNode("printer-warn"))
+                .addNode(new PrintNode("printer-pass"));
+
+        flow.connect("timer-1", "out", "split-1", "in")
+                .connect("split-1", "match", "printer-warn", "in")
+                .connect("split-1", "mismatch", "printer-pass", "in");
+
+        runFlow(flow, 3000);
+    }
+
+    private static void runFlow(Flow flow, long runTimeMs) {
+        System.out.printf("=== [%s] 시작 ===%n", flow.getId());
+
+        List<Thread> threads = new ArrayList<>();
+
+        for (Connection connection : flow.getConnections()) {
+            Thread thread = new Thread(() -> {
+                while (running) {
+                    Message message = connection.poll();
+
+                    if (message != null && connection.getTarget() != null) {
+                        connection.getTarget().receive(message);
+                    }
+                }
+            });
+
+            threads.add(thread);
+            thread.start();
+        }
+
+        flow.initialize();
+
+        try {
+            Thread.sleep(runTimeMs);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        flow.shutdown();
+
+        boolean isClear = true;
+
+        while (isClear) {
+            isClear = false;
+
+            for (Connection connection : flow.getConnections()) {
+                if (connection.getBufferSize() > 0) {
+                    isClear = true;
+                }
+
+                try {
+                    Thread.sleep(100);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        running = false;
+
+        for (Thread thread : threads) {
+            thread.interrupt();
+        }
+
+        System.out.printf("=== [%s] 종료 ===%n", flow.getId());
     }
 
 }
