@@ -12,42 +12,25 @@
 
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.DefaultInputPort;
-import com.fbp.engine.core.DefaultOutputPort;
-import com.fbp.engine.core.InputPort;
-import com.fbp.engine.core.Node;
-import com.fbp.engine.core.OutputPort;
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
-import lombok.Getter;
 
-@Getter
-public class FilterNode implements Node {
-
-    private final String id;
+public class FilterNode extends AbstractNode {
 
     private final String key;
 
     private final double threshold;
 
-    private final InputPort inputPort;
-
-    private final OutputPort outputPort;
-
     public FilterNode(String id, String key, double threshold) {
-        this.id = id;
+        super(id);
         this.key = key;
         this.threshold = threshold;
-        this.inputPort = new DefaultInputPort("in", this);
-        this.outputPort = new DefaultOutputPort("out");
+        addInputPort("in");
+        addOutputPort("out");
     }
 
     @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
-    public void process(Message message) {
+    public void onProcess(Message message) {
         if (!message.hasKey(key)) {
             return;
         }
@@ -58,9 +41,17 @@ public class FilterNode implements Node {
             double value = ((Number) rawValue).doubleValue();
 
             if (value >= threshold) {
-                outputPort.send(message);
+                send("out", message);
             }
         }
+    }
+
+    @Override
+    public void initialize() {
+    }
+
+    @Override
+    public void shutdown() {
     }
 
 }

@@ -26,7 +26,7 @@ class GeneratorNodeTest {
         GeneratorNode generator = new GeneratorNode("generator-1");
 
         Connection connection = new Connection("connection-1");
-        generator.getOutputPort().connect(connection);
+        generator.getOutputPort("out").connect(connection);
 
         generator.generate("key", "value");
 
@@ -40,7 +40,7 @@ class GeneratorNodeTest {
         GeneratorNode generator = new GeneratorNode("generator-1");
 
         Connection connection = new Connection("connection-1");
-        generator.getOutputPort().connect(connection);
+        generator.getOutputPort("out").connect(connection);
 
         generator.generate("key", "value");
 
@@ -53,7 +53,7 @@ class GeneratorNodeTest {
         // getOutputPort()가 null이 아님
         GeneratorNode generator = new GeneratorNode("generator-1");
 
-        Assertions.assertNotNull(generator.getOutputPort());
+        Assertions.assertNotNull(generator.getOutputPort("out"));
     }
 
     @Test
@@ -63,7 +63,7 @@ class GeneratorNodeTest {
         GeneratorNode generator = new GeneratorNode("generator-1");
 
         Connection connection = new Connection("connection-1");
-        generator.getOutputPort().connect(connection);
+        generator.getOutputPort("out").connect(connection);
 
         generator.generate("key1", "value1");
         generator.generate("key2", "value2");

@@ -14,18 +14,23 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
-import java.util.Map;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
-public class GeneratorNode extends AbstractNode {
+public class LogNode extends AbstractNode {
 
-    public GeneratorNode(String id) {
+    public LogNode(String id) {
         super(id);
+        addInputPort("in");
         addOutputPort("out");
     }
 
     @Override
     public void onProcess(Message message) {
-        // GeneratorNode는 외부 메시지를 처리하지 않으므로 빈 구현
+        System.out.printf("[%s][%s] %s%n",
+                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")), getId(), message.getPayload());
+
+        send("out", message);
     }
 
     @Override
@@ -34,12 +39,6 @@ public class GeneratorNode extends AbstractNode {
 
     @Override
     public void shutdown() {
-    }
-
-    public void generate(String key, Object value) {
-        Message message = new Message(Map.of(key, value));
-
-        send("out", message);
     }
 
 }

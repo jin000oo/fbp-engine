@@ -20,4 +20,8 @@ public interface Node {
 
     void process(Message message);
 
+    void initialize();
+
+    void shutdown();
+
 }

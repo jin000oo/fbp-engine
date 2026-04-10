@@ -18,6 +18,7 @@ import com.fbp.engine.message.Message;
 import com.fbp.engine.node.FilterNode;
 import com.fbp.engine.node.GeneratorNode;
 import com.fbp.engine.node.PrintNode;
+import com.fbp.engine.node.TimerNode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +42,11 @@ public class Main {
 //        System.out.println("===== 과제 4-4 =====");
 //        test5();
 
-        System.out.println("===== 과제 4-5 =====");
-        test6();
+//        System.out.println("===== 과제 4-5 =====");
+//        test6();
+
+        System.out.println("===== 과제 5-6 =====");
+        test7();
     }
 
     private static void test1() {
@@ -60,9 +64,9 @@ public class Main {
         PrintNode printer = new PrintNode("printer-1");
 
         Connection connection = new Connection("connection-1");
-        connection.setTarget(printer.getInputPort());
+        connection.setTarget(printer.getInputPort("in"));
 
-        generator.getOutputPort().connect(connection);
+        generator.getOutputPort("out").connect(connection);
 
         generator.generate("temperature", 25.5);
     }
@@ -74,11 +78,11 @@ public class Main {
 
         Connection connection1 = new Connection("connection-1");
         Connection connection2 = new Connection("connection-2");
-        connection1.setTarget(printer1.getInputPort());
-        connection2.setTarget(printer2.getInputPort());
+        connection1.setTarget(printer1.getInputPort("in"));
+        connection2.setTarget(printer2.getInputPort("in"));
 
-        generator.getOutputPort().connect(connection1);
-        generator.getOutputPort().connect(connection2);
+        generator.getOutputPort("out").connect(connection1);
+        generator.getOutputPort("out").connect(connection2);
 
         generator.generate("test", "success");
     }
@@ -90,11 +94,11 @@ public class Main {
 
         Connection connection1 = new Connection("connection-1");
         Connection connection2 = new Connection("connection-2");
-        connection1.setTarget(filter.getInputPort());
-        connection2.setTarget(printer.getInputPort());
+        connection1.setTarget(filter.getInputPort("in"));
+        connection2.setTarget(printer.getInputPort("in"));
 
-        generator.getOutputPort().connect(connection1);
-        filter.getOutputPort().connect(connection2);
+        generator.getOutputPort("out").connect(connection1);
+        filter.getOutputPort("out").connect(connection2);
 
         generator.generate("temperature", 25.0);
         generator.generate("temperature", 35.0);
@@ -105,9 +109,9 @@ public class Main {
         PrintNode printer = new PrintNode("printer-1");
 
         Connection connection = new Connection("connection");
-        connection.setTarget(printer.getInputPort());
+        connection.setTarget(printer.getInputPort("in"));
 
-        generator.getOutputPort().connect(connection);
+        generator.getOutputPort("out").connect(connection);
 
         Thread producer = new Thread(() -> {
             for (int i = 1; i <= 5; i++) {
@@ -132,7 +136,7 @@ public class Main {
                 Message message = connection.poll();
 
                 if (message != null) {
-                    printer.getInputPort().receive(message);
+                    printer.getInputPort("in").receive(message);
                 }
             }
         });
@@ -148,11 +152,11 @@ public class Main {
 
         Connection connection1 = new Connection("connection-1");
         Connection connection2 = new Connection("connection-2");
-        connection1.setTarget(filter.getInputPort());
-        connection2.setTarget(printer.getInputPort());
+        connection1.setTarget(filter.getInputPort("in"));
+        connection2.setTarget(printer.getInputPort("in"));
 
-        generator.getOutputPort().connect(connection1);
-        filter.getOutputPort().connect(connection2);
+        generator.getOutputPort("out").connect(connection1);
+        filter.getOutputPort("out").connect(connection2);
 
         Thread filterThread = new Thread(() -> {
             System.out.println("[test6 - Filter] 대기 시작");
@@ -161,7 +165,7 @@ public class Main {
                 Message message = connection1.poll();
 
                 if (message != null) {
-                    filter.getInputPort().receive(message);
+                    filter.getInputPort("in").receive(message);
                 }
             }
 
@@ -175,7 +179,7 @@ public class Main {
                 Message message = connection2.poll();
 
                 if (message != null) {
-                    printer.getInputPort().receive(message);
+                    printer.getInputPort("in").receive(message);
 
                     System.out.printf("  -> [현재 connection-2 버퍼 사이즈: %d]%n", connection2.getBufferSize());
 
@@ -226,6 +230,65 @@ public class Main {
         filterThread.start();
         printerThread.start();
         generatorThread.start();
+    }
+
+    private static void test7() {
+        TimerNode timer = new TimerNode("timer-1", 500);
+        FilterNode filter = new FilterNode("filter-1", "tick", 3);
+        PrintNode printer = new PrintNode("printer-1");
+
+        Connection connection1 = new Connection("connection-1");
+        Connection connection2 = new Connection("connection-2");
+        connection1.setTarget(filter.getInputPort("in"));
+        connection2.setTarget(printer.getInputPort("in"));
+
+        timer.getOutputPort("out").connect(connection1);
+        filter.getOutputPort("out").connect(connection2);
+
+        Thread filterThread = new Thread(() -> {
+            while (running) {
+                Message message = connection1.poll();
+
+                if (message != null) {
+                    filter.getInputPort("in").receive(message);
+                }
+            }
+        });
+
+        Thread printerThread = new Thread(() -> {
+            while (running) {
+                Message message = connection2.poll();
+
+                if (message != null) {
+                    printer.getInputPort("in").receive(message);
+                }
+            }
+        });
+
+        filterThread.start();
+        printerThread.start();
+
+        System.out.println("=== initialize ===");
+        timer.initialize();
+        filter.initialize();
+        printer.initialize();
+
+        try {
+            Thread.sleep(3000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("=== shutdown ===");
+        printer.shutdown();
+        filter.shutdown();
+        timer.shutdown();
+
+        running = false;
+
+        filterThread.interrupt();
+        printerThread.interrupt();
     }
 
 }

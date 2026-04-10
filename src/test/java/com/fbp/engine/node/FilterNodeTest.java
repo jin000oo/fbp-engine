@@ -35,7 +35,7 @@ class FilterNodeTest {
     @BeforeEach
     void setUp() {
         filter = new FilterNode("filter-1", "temperature", 30.0);
-        filter.getOutputPort().connect(connection);
+        filter.getOutputPort("out").connect(connection);
     }
 
     @Test
@@ -74,6 +74,36 @@ class FilterNodeTest {
         // 필터링 대상 키가 없는 메시지가 들어왔을 때 예외 없이 처리됨
         Message message = new Message(Map.of("humidity", 60.0));
         Assertions.assertDoesNotThrow(() -> filter.process(message));
+    }
+
+//    @Test
+//    @DisplayName("조건 만족 → send 호출")
+//    void test5() {
+//        // threshold 이상인 메시지가 OutputPort로 전달됨
+//        Message message = new Message(Map.of("temperature", 35.0));
+//        filter.process(message);
+//
+//        Assertions.assertEquals(1, connection.getBufferSize());
+//    }
+
+    @Test
+    @DisplayName("조건 미달 → 차단")
+    void test6() {
+        // threshold 미만인 메시지가 OutputPort로 전달되지 않음
+        Message message = new Message(Map.of("temperature", 25.0));
+        filter.process(message);
+
+        Assertions.assertEquals(0, connection.getBufferSize());
+    }
+
+    @Test
+    @DisplayName("포트 구성 확인")
+    void test7() {
+        // getInputPort("in")과 getOutputPort("out")이 null이 아님
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(filter.getInputPort("in")),
+                () -> Assertions.assertNotNull(filter.getOutputPort("out"))
+        );
     }
 
 }

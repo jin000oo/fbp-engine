@@ -12,6 +12,7 @@
 
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
 import java.util.Map;
@@ -54,7 +55,7 @@ class PrintNodeTest {
     void test4() {
         // getInputPort()가 null이 아님
         PrintNode printNode = new PrintNode("printer-1");
-        Assertions.assertNotNull(printNode.getInputPort());
+        Assertions.assertNotNull(printNode.getInputPort("in"));
     }
 
     @Test
@@ -63,7 +64,32 @@ class PrintNodeTest {
         // InputPort의 receive()를 호출하면 process()가 실행됨
         PrintNode printNode = new PrintNode("printer-1");
         Message message = new Message(Map.of("test", 1));
-        Assertions.assertDoesNotThrow(() -> printNode.getInputPort().receive(message));
+        Assertions.assertDoesNotThrow(() -> printNode.getInputPort("in").receive(message));
+    }
+
+    @Test
+    @DisplayName("포트 구성 확인")
+    void test6() {
+        // getInputPort("in")이 null이 아님
+        PrintNode printer = new PrintNode("printer-1");
+        Assertions.assertNotNull(printer.getInputPort("in"));
+    }
+
+    @Test
+    @DisplayName("process 정상 동작")
+    void test7() {
+        // 메시지를 process()하면 예외 없이 처리됨
+        PrintNode printer = new PrintNode("printer-1");
+        Message message = new Message(Map.of("test", 1));
+        Assertions.assertDoesNotThrow(() -> printer.process(message));
+    }
+
+    @Test
+    @DisplayName("AbstractNode 상속 확인")
+    void test8() {
+        // PrintNode가 AbstractNode의 인스턴스임 (instanceof)
+        PrintNode printer = new PrintNode("printer-1");
+        Assertions.assertTrue(printer instanceof AbstractNode);
     }
 
 }

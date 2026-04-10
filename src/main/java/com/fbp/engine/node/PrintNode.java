@@ -12,32 +12,27 @@
 
 package com.fbp.engine.node;
 
-import com.fbp.engine.core.DefaultInputPort;
-import com.fbp.engine.core.InputPort;
-import com.fbp.engine.core.Node;
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
-import lombok.Getter;
 
-@Getter
-public class PrintNode implements Node {
-
-    private final String id;
-
-    private final InputPort inputPort;
+public class PrintNode extends AbstractNode {
 
     public PrintNode(String id) {
-        this.id = id;
-        this.inputPort = new DefaultInputPort("in", this);
+        super(id);
+        addInputPort("in");
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public void onProcess(Message message) {
+        System.out.printf("[%s] %s%n", getId(), message.getPayload());
     }
 
     @Override
-    public void process(Message message) {
-        System.out.printf("[%s] %s%n", id, message.getPayload());
+    public void initialize() {
+    }
+
+    @Override
+    public void shutdown() {
     }
 
 }
