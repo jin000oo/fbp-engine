@@ -59,7 +59,7 @@ public class Main {
         GeneratorNode generator = new GeneratorNode("generator-1");
         PrintNode printer = new PrintNode("printer-1");
 
-        Connection connection = new Connection("connection-1", 10);
+        Connection connection = new Connection("connection-1");
         connection.setTarget(printer.getInputPort());
 
         generator.getOutputPort().connect(connection);
@@ -72,8 +72,8 @@ public class Main {
         PrintNode printer1 = new PrintNode("printer-1");
         PrintNode printer2 = new PrintNode("printer-2");
 
-        Connection connection1 = new Connection("connection-1", 10);
-        Connection connection2 = new Connection("connection-2", 10);
+        Connection connection1 = new Connection("connection-1");
+        Connection connection2 = new Connection("connection-2");
         connection1.setTarget(printer1.getInputPort());
         connection2.setTarget(printer2.getInputPort());
 
@@ -88,8 +88,8 @@ public class Main {
         FilterNode filter = new FilterNode("filter-1", "temperature", 35.0);
         PrintNode printer = new PrintNode("printer-1");
 
-        Connection connection1 = new Connection("connection-1", 10);
-        Connection connection2 = new Connection("connection-2", 10);
+        Connection connection1 = new Connection("connection-1");
+        Connection connection2 = new Connection("connection-2");
         connection1.setTarget(filter.getInputPort());
         connection2.setTarget(printer.getInputPort());
 
