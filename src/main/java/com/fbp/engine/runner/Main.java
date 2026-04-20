@@ -14,6 +14,7 @@ package com.fbp.engine.runner;
 
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.core.Flow;
+import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.FilterNode;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
 
@@ -66,8 +68,17 @@ public class Main {
 //        System.out.println("===== 과제 7-2 =====");
 //        test11();
 
-        System.out.println("===== 과제 7-3 =====");
-        test12();
+//        System.out.println("===== 과제 7-3 =====");
+//        test12();
+
+//        System.out.println("===== 과제 8-2 =====");
+//        test13();
+
+//        System.out.println("===== 과제 8-3, 8-4 =====");
+//        test14();
+
+        System.out.println("===== 과제 8-5 =====");
+        test15();
     }
 
     private static void test1() {
@@ -633,6 +644,139 @@ public class Main {
         }
 
         System.out.printf("=== [%s] 종료 ===%n", flow.getId());
+    }
+
+    private static void test13() {
+        FlowEngine engine = new FlowEngine();
+
+        Flow flow = new Flow("split-flow");
+
+        flow.addNode(new TimerNode("timer-1", 500))
+                .addNode(new SplitNode("split-1", "tick", 3))
+                .addNode(new PrintNode("printer-warn"))
+                .addNode(new PrintNode("printer-pass"));
+
+        flow.connect("timer-1", "out", "split-1", "in")
+                .connect("split-1", "match", "printer-warn", "in")
+                .connect("split-1", "mismatch", "printer-pass", "in");
+
+        engine.register(flow);
+        engine.startFlow("split-flow");
+
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        engine.shutdown();
+    }
+
+    private static void test14() {
+        FlowEngine engine = new FlowEngine();
+
+        Flow flowA = new Flow("flow-a");
+        flowA.addNode(new TimerNode("timer-a", 500))
+                .addNode(new PrintNode("A"));
+        flowA.connect("timer-a", "out", "A", "in");
+
+        Flow flowB = new Flow("flow-b");
+        flowB.addNode(new TimerNode("timer-b", 1000))
+                .addNode(new PrintNode("B"));
+        flowB.connect("timer-b", "out", "B", "in");
+
+        engine.register(flowA);
+        engine.register(flowB);
+
+        engine.listFlows();
+
+        engine.startFlow(flowA.getId());
+        engine.startFlow(flowB.getId());
+
+        engine.listFlows();
+
+        try {
+            Thread.sleep(3000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        engine.stopFlow("flow-a");
+
+        engine.listFlows();
+
+        try {
+            Thread.sleep(3000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        engine.shutdown();
+    }
+
+    private static void test15() {
+        FlowEngine engine = new FlowEngine();
+
+        Flow flowA = new Flow("monitoring");
+        flowA.addNode(new TimerNode("timer-a", 500))
+                .addNode(new PrintNode("A"));
+        flowA.connect("timer-a", "out", "A", "in");
+
+        Flow flowB = new Flow("logging");
+        flowB.addNode(new TimerNode("timer-b", 1000))
+                .addNode(new PrintNode("B"));
+        flowB.connect("timer-b", "out", "B", "in");
+
+        engine.register(flowA);
+        engine.register(flowB);
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("fbp> ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                continue;
+            }
+
+            String[] tokens = input.split(" ");
+            String command = tokens[0].toLowerCase();
+
+            try {
+                switch (command) {
+                    case "list":
+                        engine.listFlows();
+                        break;
+
+                    case "start":
+                        if (tokens.length > 1) {
+                            engine.startFlow(tokens[1]);
+                        } else {
+                            System.out.println("start <flowId>");
+                        }
+                        break;
+
+                    case "stop":
+                        if (tokens.length > 1) {
+                            engine.stopFlow(tokens[1]);
+                        } else {
+                            System.out.println("stop <flowId>");
+                        }
+                        break;
+
+                    case "exit":
+                        engine.shutdown();
+                        scanner.close();
+                        return;
+                }
+
+            } catch (Exception e) {
+                System.err.println("오류 발생: %s".formatted(e.getMessage()));
+            }
+        }
     }
 
 }

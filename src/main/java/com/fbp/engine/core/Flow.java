@@ -19,9 +19,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class Flow {
+
+    public enum State {
+        INITIALIZED, RUNNING, STOPPED
+    }
 
     private final String id;
 
@@ -30,6 +35,10 @@ public class Flow {
     private final List<Connection> connections = new ArrayList<>();
 
     private final Map<String, List<String>> adjacencyList = new HashMap<>();
+
+    @Getter
+    @Setter
+    private State state = State.INITIALIZED;
 
     public Flow(String id) {
         this.id = id;
@@ -102,18 +111,18 @@ public class Flow {
         return errors;
     }
 
-    private enum State {
+    private enum Visit {
         UNVISITED, VISITING, VISITED
     }
 
     private boolean hasCycle() {
-        Map<String, State> states = new HashMap<>();
+        Map<String, Visit> states = new HashMap<>();
         for (String nodeId : nodes.keySet()) {
-            states.put(nodeId, State.UNVISITED);
+            states.put(nodeId, Visit.UNVISITED);
         }
 
         for (String nodeId : nodes.keySet()) {
-            if (states.get(nodeId) == State.UNVISITED) {
+            if (states.get(nodeId) == Visit.UNVISITED) {
                 if (dfs(nodeId, states)) {
                     return true;
                 }
@@ -123,20 +132,20 @@ public class Flow {
         return false;
     }
 
-    private boolean dfs(String nodeId, Map<String, State> states) {
-        states.put(nodeId, State.VISITING);
+    private boolean dfs(String nodeId, Map<String, Visit> states) {
+        states.put(nodeId, Visit.VISITING);
 
         for (String neighbor : adjacencyList.getOrDefault(nodeId, Collections.emptyList())) {
-            if (states.get(neighbor) == State.UNVISITED) {
+            if (states.get(neighbor) == Visit.UNVISITED) {
                 if (dfs(neighbor, states)) {
                     return true;
                 }
-            } else if (states.get(neighbor) == State.VISITING) {
+            } else if (states.get(neighbor) == Visit.VISITING) {
                 return true;
             }
         }
 
-        states.put(nodeId, State.VISITED);
+        states.put(nodeId, Visit.VISITED);
 
         return false;
     }
