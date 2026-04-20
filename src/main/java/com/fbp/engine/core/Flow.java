@@ -108,6 +108,9 @@ public class Flow {
 
     private boolean hasCycle() {
         Map<String, State> states = new HashMap<>();
+        for (String nodeId : nodes.keySet()) {
+            states.put(nodeId, State.UNVISITED);
+        }
 
         for (String nodeId : nodes.keySet()) {
             if (states.get(nodeId) == State.UNVISITED) {
