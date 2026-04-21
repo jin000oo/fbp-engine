@@ -17,11 +17,16 @@ import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
 import com.fbp.engine.core.Node;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.AlertNode;
+import com.fbp.engine.node.FileWriterNode;
 import com.fbp.engine.node.FilterNode;
 import com.fbp.engine.node.GeneratorNode;
+import com.fbp.engine.node.HumiditySensorNode;
 import com.fbp.engine.node.LogNode;
 import com.fbp.engine.node.PrintNode;
 import com.fbp.engine.node.SplitNode;
+import com.fbp.engine.node.TemperatureSensorNode;
+import com.fbp.engine.node.ThresholdFilterNode;
 import com.fbp.engine.node.TimerNode;
 import com.fbp.engine.node.TransformNode;
 import java.util.ArrayList;
@@ -77,8 +82,11 @@ public class Main {
 //        System.out.println("===== 과제 8-3, 8-4 =====");
 //        test14();
 
-        System.out.println("===== 과제 8-5 =====");
-        test15();
+//        System.out.println("===== 과제 8-5 =====");
+//        test15();
+
+        System.out.println("===== 과제 9-4 =====");
+        test16();
     }
 
     private static void test1() {
@@ -774,9 +782,48 @@ public class Main {
                 }
 
             } catch (Exception e) {
-                System.err.println("오류 발생: %s".formatted(e.getMessage()));
+                System.err.printf("오류 발생: %s%n", e.getMessage());
             }
         }
+    }
+
+    private static void test16() {
+        FlowEngine engine = new FlowEngine();
+
+        Flow flow = new Flow("flow");
+
+        flow.addNode(new TimerNode("timer", 1000))
+                .addNode(new TemperatureSensorNode("temperature-sensor", 15, 45))
+                .addNode(new HumiditySensorNode("humidity-sensor", 55, 85))
+                .addNode(new ThresholdFilterNode("threshold-filter-1", "temperature", 30))
+                .addNode(new ThresholdFilterNode("threshold-filter-2", "humidity", 70))
+                .addNode(new AlertNode("alerter"))
+                .addNode(new LogNode("logger"))
+                .addNode(new FileWriterNode("file-writer", "logs/test16.txt"));
+
+        flow.connect("timer", "out", "temperature-sensor", "trigger")
+                .connect("timer", "out", "humidity-sensor", "trigger")
+                .connect("temperature-sensor", "out", "threshold-filter-1", "in")
+                .connect("humidity-sensor", "out", "threshold-filter-2", "in")
+                .connect("threshold-filter-1", "alert", "alerter", "in")
+                .connect("threshold-filter-1", "normal", "file-writer", "in")
+                .connect("threshold-filter-2", "alert", "alerter", "in")
+                .connect("threshold-filter-2", "normal", "logger", "in");
+
+        engine.register(flow);
+        engine.listFlows();
+
+        engine.startFlow(flow.getId());
+
+        try {
+            Thread.sleep(10000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        engine.stopFlow(flow.getId());
+        engine.shutdown();
     }
 
 }
