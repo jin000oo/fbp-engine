@@ -85,8 +85,11 @@ public class Main {
 //        System.out.println("===== 과제 8-5 =====");
 //        test15();
 
-        System.out.println("===== 과제 9-4 =====");
-        test16();
+//        System.out.println("===== 과제 9-4 =====");
+//        test16();
+
+        System.out.println("===== 과제 10-5 =====");
+        test17();
     }
 
     private static void test1() {
@@ -809,6 +812,40 @@ public class Main {
                 .connect("threshold-filter-1", "normal", "file-writer", "in")
                 .connect("threshold-filter-2", "alert", "alerter", "in")
                 .connect("threshold-filter-2", "normal", "logger", "in");
+
+        engine.register(flow);
+        engine.listFlows();
+
+        engine.startFlow(flow.getId());
+
+        try {
+            Thread.sleep(10000);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        engine.stopFlow(flow.getId());
+        engine.shutdown();
+    }
+
+    private static void test17() {
+        FlowEngine engine = new FlowEngine();
+
+        Flow flow = new Flow("flow");
+
+        flow.addNode(new TimerNode("timer", 1000))
+                .addNode(new TemperatureSensorNode("temperature-sensor", 15, 45))
+                .addNode(new ThresholdFilterNode("threshold-filter", "temperature", 30))
+                .addNode(new AlertNode("alerter"))
+                .addNode(new LogNode("logger"))
+                .addNode(new FileWriterNode("file-writer", "logs/test17.txt"));
+
+        flow.connect("timer", "out", "temperature-sensor", "trigger")
+                .connect("temperature-sensor", "out", "threshold-filter", "in")
+                .connect("threshold-filter", "alert", "alerter", "in")
+                .connect("threshold-filter", "normal", "logger", "in")
+                .connect("logger", "out", "file-writer", "in");
 
         engine.register(flow);
         engine.listFlows();

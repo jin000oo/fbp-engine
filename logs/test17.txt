@@ -1,0 +1,6 @@
+Message(id=16793f75-a951-48b0-b206-fe625dbcb9b3, payload={temperature=23.8, unit=°C, timestamp=1776750197377, sensorId=temperature-sensor}, timestamp=1776750197378)
+Message(id=e98948a3-54fd-4892-b7b3-7bf487b47e31, payload={temperature=16.8, unit=°C, timestamp=1776750198377, sensorId=temperature-sensor}, timestamp=1776750198377)
+Message(id=399643db-e0dd-4200-80ff-f2ffb4679849, payload={temperature=30.0, unit=°C, timestamp=1776750199378, sensorId=temperature-sensor}, timestamp=1776750199378)
+Message(id=75863c5a-df09-43d2-9682-325b061ff9c0, payload={temperature=20.9, unit=°C, timestamp=1776750200376, sensorId=temperature-sensor}, timestamp=1776750200377)
+Message(id=5a8e4f56-d342-4c02-b0ee-510bf482f9f0, payload={temperature=16.6, unit=°C, timestamp=1776750202377, sensorId=temperature-sensor}, timestamp=1776750202378)
+Message(id=f7902482-5a99-42a8-a18d-f7362b2acd36, payload={temperature=25.0, unit=°C, timestamp=1776750205377, sensorId=temperature-sensor}, timestamp=1776750205377)
