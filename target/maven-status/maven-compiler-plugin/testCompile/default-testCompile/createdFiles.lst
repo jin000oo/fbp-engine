@@ -1,0 +1,5 @@
+com/fbp/engine/core/ProtocolNodeTest$DummyProtocolNode.class
+com/fbp/engine/core/ProtocolNodeTest.class
+com/fbp/engine/ModbusIntegrationTest.class
+com/fbp/engine/MqttIntegrationTest.class
+com/fbp/engine/CrossProtocolIntegrationTest.class

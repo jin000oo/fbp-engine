@@ -21,6 +21,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class ModbusTcpClientTest {
@@ -183,6 +184,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("연결/해제")
+    @Tag("integration")
     void test6() throws IOException {
         // connect() 후 isConnected() true, disconnect() 후 false
         ModbusTcpClient client = new ModbusTcpClient("localhost", 5022);
@@ -196,6 +198,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("Holding Register 읽기")
+    @Tag("integration")
     void test7() throws IOException, ModbusException {
         // 시뮬레이터에 설정한 값과 readHoldingRegisters() 반환값이 일치
         ModbusTcpClient client = new ModbusTcpClient("localhost", 5022);
@@ -213,6 +216,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("다수 레지스터 읽기")
+    @Tag("integration")
     void test8() throws IOException, ModbusException {
         // 5개 레지스터를 한 번에 읽어 배열 크기와 값이 모두 일치
         ModbusTcpClient client = new ModbusTcpClient("localhost", 5022);
@@ -238,6 +242,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("Single Register 쓰기")
+    @Tag("integration")
     void test9() throws IOException, ModbusException {
         // writeSingleRegister() 후 시뮬레이터의 getRegister()로 값 변경 확인
         int firstRegister = simulator.getRegister(0);
@@ -252,6 +257,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("쓰기 후 읽기")
+    @Tag("integration")
     void test10() throws IOException, ModbusException {
         // 쓰기 → 읽기 순서로 값이 일관되게 반영됨
         ModbusTcpClient client = new ModbusTcpClient("localhost", 5022);
@@ -273,6 +279,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("에러 응답 처리")
+    @Tag("integration")
     void test11() throws IOException {
         // 존재하지 않는 주소를 읽으면 ModbusException 발생, exceptionCode가 ILLEGAL_DATA_ADDRESS
         ModbusTcpClient client = new ModbusTcpClient("localhost", 5022);
@@ -289,6 +296,7 @@ class ModbusTcpClientTest {
 
     @Test
     @DisplayName("소켓 타임아웃")
+    @Tag("integration")
     void test12() {
         // 시뮬레이터를 중지한 상태에서 요청 시 SocketTimeoutException 또는 IOException 발생
         simulator.stop();

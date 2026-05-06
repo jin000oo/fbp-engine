@@ -10,7 +10,7 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.node;
+package com.fbp.engine.core;
 
 import java.io.IOException;
 import java.util.Map;
@@ -68,7 +68,7 @@ class ProtocolNodeTest {
     @DisplayName("초기 상태")
     void test1() {
         // 생성 직후 getConnectionState()가 DISCONNECTED
-        Assertions.assertEquals(ProtocolNode.ConnectionState.DISCONNECTED, node.getConnectionState());
+        Assertions.assertEquals(ConnectionState.DISCONNECTED, node.getConnectionState());
     }
 
     @Test
@@ -88,7 +88,7 @@ class ProtocolNodeTest {
         // connect()가 성공하면 상태가 CONNECTED로 변경됨
         node.initialize();
 
-        Assertions.assertEquals(ProtocolNode.ConnectionState.CONNECTED, node.getConnectionState());
+        Assertions.assertEquals(ConnectionState.CONNECTED, node.getConnectionState());
     }
 
     @Test
@@ -99,7 +99,7 @@ class ProtocolNodeTest {
         node.initialize();
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals(ProtocolNode.ConnectionState.ERROR, node.getConnectionState()),
+                () -> Assertions.assertEquals(ConnectionState.ERROR, node.getConnectionState()),
                 () -> Assertions.assertFalse(node.isConnected())
         );
     }
@@ -111,7 +111,7 @@ class ProtocolNodeTest {
         node.initialize();
         node.shutdown();
 
-        Assertions.assertEquals(ProtocolNode.ConnectionState.DISCONNECTED, node.getConnectionState());
+        Assertions.assertEquals(ConnectionState.DISCONNECTED, node.getConnectionState());
     }
 
     @Test
@@ -131,7 +131,7 @@ class ProtocolNodeTest {
         node.initialize();
 
         Thread.sleep(400);
-        
+
         Assertions.assertTrue(node.connectTryCount >= 3);
     }
 

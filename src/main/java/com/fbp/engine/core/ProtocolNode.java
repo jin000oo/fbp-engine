@@ -10,9 +10,8 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.node;
+package com.fbp.engine.core;
 
-import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,10 +22,6 @@ import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 
 public abstract class ProtocolNode extends AbstractNode {
-
-    public enum ConnectionState {
-        DISCONNECTED, CONNECTING, CONNECTED, ERROR
-    }
 
     private final Map<String, Object> config;
 

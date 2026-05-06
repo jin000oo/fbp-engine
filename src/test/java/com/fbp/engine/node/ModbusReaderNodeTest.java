@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class ModbusReaderNodeTest {
@@ -103,6 +104,7 @@ class ModbusReaderNodeTest {
 
     @Test
     @DisplayName("연결 성공")
+    @Tag("integration")
     void test4() {
         // initialize() 후 isConnected()가 true
         reader.initialize();
@@ -112,6 +114,7 @@ class ModbusReaderNodeTest {
 
     @Test
     @DisplayName("레지스터 읽기")
+    @Tag("integration")
     void test5() {
         // trigger 메시지 전송 후 CollectorNode에서 레지스터 값이 포함된 메시지 수신
         reader.initialize();
@@ -128,6 +131,7 @@ class ModbusReaderNodeTest {
 
     @Test
     @DisplayName("registerMapping 적용")
+    @Tag("integration")
     void test6() {
         // 매핑이 설정된 경우 의미 있는 키(temperature, humidity)로 변환됨
         reader.initialize();
@@ -147,6 +151,7 @@ class ModbusReaderNodeTest {
 
     @Test
     @DisplayName("읽기 실패 시 에러 포트")
+    @Tag("integration")
     void test7() {
         // 존재하지 않는 주소를 읽으면 "error" 포트로 에러 메시지 전달
         reader.initialize();
@@ -164,6 +169,7 @@ class ModbusReaderNodeTest {
 
     @Test
     @DisplayName("shutdown 후 연결 해제")
+    @Tag("integration")
     void test8() {
         // shutdown() 후 isConnected()가 false
         reader.initialize();

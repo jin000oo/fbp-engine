@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class ModbusWriterNodeTest {
@@ -86,6 +87,7 @@ class ModbusWriterNodeTest {
 
     @Test
     @DisplayName("연결 성공")
+    @Tag("integration")
     void test4() {
         // initialize() 후 isConnected()가 true
         writer.initialize();
@@ -95,6 +97,7 @@ class ModbusWriterNodeTest {
 
     @Test
     @DisplayName("레지스터 쓰기")
+    @Tag("integration")
     void test5() {
         // FBP Message를 process()로 보낸 후, 시뮬레이터의 getRegister()로 값 변경 확인
         writer.initialize();
@@ -106,6 +109,7 @@ class ModbusWriterNodeTest {
 
     @Test
     @DisplayName("스케일 변환")
+    @Tag("integration")
     void test6() {
         // scale=10.0 설정 시 25.5 → 255로 변환되어 기록됨
         writer.initialize();
@@ -123,6 +127,7 @@ class ModbusWriterNodeTest {
 
     @Test
     @DisplayName("shutdown 후 연결 해제")
+    @Tag("integration")
     void test7() {
         // shutdown() 후 isConnected()가 false
         writer.initialize();

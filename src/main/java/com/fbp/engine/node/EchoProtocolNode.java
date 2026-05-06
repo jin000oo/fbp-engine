@@ -12,6 +12,7 @@
 
 package com.fbp.engine.node;
 
+import com.fbp.engine.core.ProtocolNode;
 import com.fbp.engine.message.Message;
 import java.io.BufferedReader;
 import java.io.IOException;

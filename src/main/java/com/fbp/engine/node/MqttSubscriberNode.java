@@ -14,6 +14,7 @@ package com.fbp.engine.node;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fbp.engine.core.ProtocolNode;
 import com.fbp.engine.message.Message;
 import java.io.IOException;
 import java.util.HashMap;
