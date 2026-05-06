@@ -24,9 +24,11 @@ class ModbusTcpSimulatorTest {
     ModbusTcpSimulator simulator;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InterruptedException {
         simulator = new ModbusTcpSimulator(5020, 10);
         simulator.start();
+
+        Thread.sleep(100);
     }
 
     @AfterEach

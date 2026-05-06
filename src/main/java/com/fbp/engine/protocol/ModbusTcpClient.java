@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import lombok.Getter;
 
 public class ModbusTcpClient {
 
@@ -26,6 +27,7 @@ public class ModbusTcpClient {
 
     private DataInputStream in;
 
+    @Getter
     private int transactionId = 0;
 
     private final String host;
