@@ -21,6 +21,7 @@ import com.fbp.engine.node.ModbusWriterNode;
 import com.fbp.engine.node.MqttPublisherNode;
 import com.fbp.engine.node.MqttSubscriberNode;
 import com.fbp.engine.node.PrintNode;
+import com.fbp.engine.node.RuleNode;
 import com.fbp.engine.node.ThresholdFilterNode;
 import com.fbp.engine.node.TimerNode;
 import com.fbp.engine.node.TransformNode;
@@ -48,8 +49,11 @@ public class Main2 {
 //        System.out.println("===== 과제 3-8 =====");
 //        test5();
 
-        System.out.println("===== 과제 3-9 =====");
-        test6();
+//        System.out.println("===== 과제 3-9 =====");
+//        test6();
+
+        System.out.println("===== 과제 4-4 =====");
+        test7();
     }
 
     private static void test1() throws InterruptedException {
@@ -246,6 +250,62 @@ public class Main2 {
         Thread.sleep(3000);
 
         System.out.printf("주소 2번 최종 확인: %d%n", simulator.getRegister(2));
+
+        engine.shutdown();
+        simulator.stop();
+    }
+
+    private static void test7() throws InterruptedException {
+        ModbusTcpSimulator simulator = new ModbusTcpSimulator(5020, 10);
+        simulator.stop();
+
+        simulator.setRegister(2, 0);
+
+        FlowEngine engine = new FlowEngine();
+
+        Flow flow = new Flow("flow");
+
+        MqttSubscriberNode subscriber = new MqttSubscriberNode("mqtt-subscriber", Map.of(
+                "brokerUrl", "tcp://localhost:1883",
+                "clientId", "fbp-sub-client",
+                "topic", "sensor/temp"
+        ));
+        RuleNode rule = new RuleNode("rule", "temperature > 30.0");
+        MqttPublisherNode publisher = new MqttPublisherNode("mqtt-publisher", Map.of(
+                "brokerUrl", "tcp://localhost:1883",
+                "clientId", "fbp-pub-client",
+                "topic", "alert/temp"
+        ));
+        ModbusWriterNode writer = new ModbusWriterNode("modbus-writer", Map.of(
+                "host", "localhost",
+                "port", 5020,
+                "slaveId", 1,
+                "registerAddress", 2,
+                "valueField", "alertFlag"
+        ));
+        TransformNode transformer = new TransformNode("transformer", msg -> msg.withEntry("alertFlag", 1));
+        PrintNode printer1 = new PrintNode("normal-printer");
+        PrintNode printer2 = new PrintNode("alert-printer");
+
+        flow.addNode(subscriber)
+                .addNode(rule)
+                .addNode(publisher)
+                .addNode(writer)
+                .addNode(transformer)
+                .addNode(printer1)
+                .addNode(printer2);
+
+        flow.connect("mqtt-subscriber", "out", "rule", "in")
+                .connect("rule", "match", "alert-printer", "in")
+                .connect("rule", "match", "mqtt-publisher", "in")
+                .connect("rule", "match", "transformer", "in")
+                .connect("transformer", "out", "modbus-writer", "in")
+                .connect("rule", "mismatch", "normal-printer", "in");
+
+        engine.register(flow);
+        engine.startFlow(flow.getId());
+
+        Thread.sleep(60000);
 
         engine.shutdown();
         simulator.stop();
