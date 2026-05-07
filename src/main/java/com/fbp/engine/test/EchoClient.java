@@ -26,11 +26,11 @@ public class EchoClient {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
             String message = "Hello FBP";
-            System.out.println("발신: %s".formatted(message));
+            System.out.println("발신: " + message);
             out.println(message);
 
             String response = in.readLine();
-            System.out.println("응답: %s".formatted(response));
+            System.out.println("응답: " + response);
 
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);

@@ -16,11 +16,9 @@ import com.fbp.engine.message.Message;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
 public class Connection {
 
     private final String id;

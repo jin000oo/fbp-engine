@@ -25,7 +25,7 @@ public class SynchronizedTest {
         Thread producer = new Thread(() -> {
             for (int i = 0; i < 100; i++) {
                 synchronized (buffer) {
-                    buffer.add("메시지-%d".formatted(i));
+                    buffer.add("메시지-" + i);
                     buffer.notify();
                 }
 

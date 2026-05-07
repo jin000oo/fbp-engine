@@ -31,8 +31,8 @@ public class EchoServer {
                         String line;
 
                         while ((line = in.readLine()) != null) {
-                            System.out.println("수신: %s".formatted(line));
-                            out.println("Echo: %s".formatted(line));
+                            System.out.println("수신: " + line);
+                            out.println("Echo: " + line);
                         }
                     }
                 }

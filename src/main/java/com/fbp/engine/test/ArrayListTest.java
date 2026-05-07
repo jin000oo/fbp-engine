@@ -24,7 +24,7 @@ public class ArrayListTest {
 
         Thread producer = new Thread(() -> {
             for (int i = 0; i < 100; i++) {
-                buffer.add("메시지-%d".formatted(i));
+                buffer.add("메시지-" + i);
 
                 try {
                     Thread.sleep(100);

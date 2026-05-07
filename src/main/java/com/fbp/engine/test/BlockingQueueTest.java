@@ -25,7 +25,7 @@ public class BlockingQueueTest {
         Thread producer = new Thread(() -> {
             for (int i = 0; i < 100; i++) {
                 try {
-                    buffer.put("메시지-%d".formatted(i));
+                    buffer.put("메시지-" + i);
                     Thread.sleep(100);
 
                 } catch (InterruptedException e) {

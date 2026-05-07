@@ -20,15 +20,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.Getter;
 
-@Getter
 public class FlowEngine {
 
     public enum State {
         INITIALIZED, RUNNING, STOPPED
     }
 
+    @Getter
     private State state = State.INITIALIZED;
 
+    @Getter
     private final Map<String, Flow> flows = new HashMap<>();
 
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
@@ -77,7 +78,19 @@ public class FlowEngine {
 
             System.out.printf("[Engine] 플로우 '%s' 정지됨%n", flowId);
         }
+    }
 
+    public void removeFlow(String flowId) {
+        Flow flow = flows.get(flowId);
+        if (flow != null) {
+            if (flow.getState() == Flow.State.RUNNING) {
+                stopFlow(flowId);
+            }
+
+            flows.remove(flowId);
+
+            System.out.printf("[Engine] 플로우 '%s' 삭제됨%n", flowId);
+        }
     }
 
     public void shutdown() {
