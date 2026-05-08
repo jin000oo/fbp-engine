@@ -13,6 +13,7 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/FlowTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/ProtocolNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/RuleExpressionTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/engine/FlowManagerTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/message/MessageTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/AlertNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/CollectorNodeTest.java
@@ -37,6 +38,13 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/TimeWindowRuleNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/TimerNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/TransformNodeTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/parser/FlowDefinitionTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/parser/JsonFlowParserTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/plugin/NodeProviderTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/plugin/PluginClassLoaderTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/plugin/PluginManagerTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/protocol/ModbusExceptionTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/protocol/ModbusTcpClientTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/protocol/ModbusTcpSimulatorTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/registry/NodeFactoryTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/registry/NodeRegistryTest.java
