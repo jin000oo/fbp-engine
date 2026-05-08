@@ -76,15 +76,15 @@ class FilterNodeTest {
         Assertions.assertDoesNotThrow(() -> filter.process(message));
     }
 
-//    @Test
-//    @DisplayName("조건 만족 → send 호출")
-//    void test5() {
-//        // threshold 이상인 메시지가 OutputPort로 전달됨
-//        Message message = new Message(Map.of("temperature", 35.0));
-//        filter.process(message);
-//
-//        Assertions.assertEquals(1, connection.getBufferSize());
-//    }
+    @Test
+    @DisplayName("조건 만족 → send 호출")
+    void test5() {
+        // threshold 이상인 메시지가 OutputPort로 전달됨
+        Message message = new Message(Map.of("temperature", 35.0));
+        filter.process(message);
+
+        Mockito.verify(connection, Mockito.times(1)).deliver(message);
+    }
 
     @Test
     @DisplayName("조건 미달 → 차단")

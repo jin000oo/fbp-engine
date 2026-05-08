@@ -1,4 +1,9 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/App.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/api/ApiResponse.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/api/FlowHandler.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/api/HealthHandler.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/api/HttpApiServer.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/api/MetricsHandler.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/core/AbstractNode.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/core/Connection.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/core/ConnectionState.java
@@ -13,6 +18,9 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/core/RuleExpression.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/engine/FlowManager.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/message/Message.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/metrics/FlowMetrics.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/metrics/MetricsCollector.java
+/Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/metrics/NodeMetrics.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/node/AlertNode.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/node/CollectorNode.java
 /Users/chosun-nhn38/2026/fbp-engine/src/main/java/com/fbp/engine/node/CompositeRuleNode.java

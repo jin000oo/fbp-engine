@@ -5,6 +5,7 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/MqttIntegrationTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/MqttModbusIntegrationTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/TemperatureMonitoringIntegrationFlowTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/api/HttpApiServerTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/AbstractNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/ConnectionTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/DefaultInputPortTest.java
@@ -15,6 +16,8 @@
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/core/RuleExpressionTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/engine/FlowManagerTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/message/MessageTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/metrics/MetricsCollectorTest.java
+/Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/metrics/NodeMetricsTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/AlertNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/CollectorNodeTest.java
 /Users/chosun-nhn38/2026/fbp-engine/src/test/java/com/fbp/engine/node/CompositeRuleNodeTest.java

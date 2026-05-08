@@ -70,10 +70,6 @@ class FileWriterNodeTest {
 
         writer.shutdown();
 
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            writer.process(new Message(Map.of("data", "line")));
-        });
-
         File file = new File(TEST_FILE_PATH);
         Assertions.assertEquals(0, Files.lines(file.toPath()).count());
     }

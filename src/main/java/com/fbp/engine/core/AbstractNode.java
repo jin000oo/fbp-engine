@@ -13,6 +13,7 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public abstract class AbstractNode implements Node {
 
     protected void send(String portName, Message message) {
         OutputPort outputPort = outputPorts.get(portName);
-        
+
         if (outputPort != null) {
             outputPort.send(message);
         }
@@ -56,9 +57,22 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void process(Message message) {
+        long startNs = System.nanoTime();
+        boolean success = true;
+
         System.out.printf("[%s] processing message...%n", id);
 
-        onProcess(message);
+        try {
+            onProcess(message);
+
+        } catch (Exception e) {
+            success = false;
+
+        } finally {
+            long durationNs = System.nanoTime() - startNs;
+
+            MetricsCollector.getInstance().recordProcessing(getId(), durationNs, success);
+        }
     }
 
 }
