@@ -10,7 +10,7 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.core;
+package com.fbp.engine.rule;
 
 import com.fbp.engine.message.Message;
 import java.util.function.Predicate;

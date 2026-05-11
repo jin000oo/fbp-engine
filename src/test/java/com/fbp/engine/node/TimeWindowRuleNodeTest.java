@@ -13,8 +13,8 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.Connection;
-import com.fbp.engine.core.RuleExpression;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.rule.RuleExpression;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -13,8 +13,8 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.AbstractNode;
-import com.fbp.engine.core.RuleExpression;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.rule.RuleExpression;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;

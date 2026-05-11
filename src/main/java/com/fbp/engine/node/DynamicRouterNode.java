@@ -13,35 +13,38 @@
 package com.fbp.engine.node;
 
 import com.fbp.engine.core.AbstractNode;
-import com.fbp.engine.core.RuleExpression;
 import com.fbp.engine.message.Message;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class RuleNode extends AbstractNode {
+public class DynamicRouterNode extends AbstractNode {
 
-    private Predicate<Message> condition;
+    private final List<RoutingRule> rules = new ArrayList<>();
 
-    public RuleNode(String id, Predicate<Message> condition) {
+    public DynamicRouterNode(String id) {
         super(id);
-        this.condition = condition;
         addInputPort("in");
-        addOutputPort("match");
-        addOutputPort("mismatch");
+        addOutputPort("default");
     }
 
-    public RuleNode(String id, String expression) {
-        this(id, RuleExpression.parse(expression));
+    public DynamicRouterNode addRule(String expression, String portName) {
+        rules.add(new RoutingRule(expression, portName));
+
+        addOutputPort(portName);
+
+        return this;
     }
 
     @Override
     public void onProcess(Message message) {
-        if (condition != null) {
-            if (condition.test(message)) {
-                send("match", message);
-            } else {
-                send("mismatch", message);
+        for (RoutingRule rule : rules) {
+            if (rule.matches(message)) {
+                send(rule.getTargetPort(), message);
+                return;
             }
         }
+
+        send("default", message);
     }
 
     @Override
