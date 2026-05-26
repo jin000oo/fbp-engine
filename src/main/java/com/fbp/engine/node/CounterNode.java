@@ -14,10 +14,11 @@ package com.fbp.engine.node;
 
 import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.message.Message;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CounterNode extends AbstractNode {
 
-    private int count = 0;
+    private final AtomicInteger count = new AtomicInteger(0);
 
     public CounterNode(String id) {
         super(id);
@@ -27,9 +28,9 @@ public class CounterNode extends AbstractNode {
 
     @Override
     public void onProcess(Message message) {
-        count++;
+        int currentCount = count.incrementAndGet();
 
-        Message newMessage = message.withEntry("count", count);
+        Message newMessage = message.withEntry("count", currentCount);
         send("out", newMessage);
     }
 
@@ -39,7 +40,7 @@ public class CounterNode extends AbstractNode {
 
     @Override
     public void shutdown() {
-        System.out.printf("[%s] 총 처리 메시지: %d건%n", getId(), count);
+        System.out.printf("[%s] 총 처리 메시지: %d건%n", getId(), count.get());
     }
 
 }

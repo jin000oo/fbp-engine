@@ -13,9 +13,9 @@
 package com.fbp.engine.core;
 
 import com.fbp.engine.message.Message;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class FlowEngine {
     private State state = State.INITIALIZED;
 
     @Getter
-    private final Map<String, Flow> flows = new HashMap<>();
+    private final Map<String, Flow> flows = new ConcurrentHashMap<>();
 
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
 

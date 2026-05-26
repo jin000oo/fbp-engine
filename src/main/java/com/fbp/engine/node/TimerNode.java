@@ -18,12 +18,13 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimerNode extends AbstractNode {
 
     private final long intervalMs;
 
-    private int tickCount = 0;
+    private final AtomicInteger tickCount = new AtomicInteger(0);
 
     private ScheduledExecutorService scheduler;
 
@@ -43,7 +44,7 @@ public class TimerNode extends AbstractNode {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             Message message = new Message(Map.of(
-                    "tick", tickCount++,
+                    "tick", tickCount.getAndIncrement(),
                     "timestamp", System.currentTimeMillis()
             ));
 
