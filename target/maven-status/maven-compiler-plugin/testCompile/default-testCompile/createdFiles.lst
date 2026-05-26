@@ -1,5 +1,8 @@
+com/fbp/engine/node/ErrorHandlerNodeTest$1.class
 com/fbp/engine/core/ProtocolNodeTest$DummyProtocolNode.class
+com/fbp/engine/flow/SubFlowNodeTest$1.class
 com/fbp/engine/core/ProtocolNodeTest.class
+com/fbp/engine/node/ErrorHandlerNodeTest$ExceptionNode.class
 com/fbp/engine/ModbusIntegrationTest.class
 com/fbp/engine/MqttIntegrationTest.class
 com/fbp/engine/CrossProtocolIntegrationTest.class

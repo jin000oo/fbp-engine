@@ -114,8 +114,8 @@ class MqttIntegrationTest {
         testClient.publish("sensor/temp", new MqttMessage("{\"v\": 1}".getBytes()));
         testClient.publish("sensor/humi", new MqttMessage("{\"v\": 2}".getBytes()));
 
-        Message message1 = connection.poll();
-        Message message2 = connection.poll();
+        Message message1 = connection.take();
+        Message message2 = connection.take();
 
         Assertions.assertNotNull(message1);
         Assertions.assertNotNull(message2);
@@ -154,7 +154,7 @@ class MqttIntegrationTest {
 
         testClient.publish("qos/test", qosMessage);
 
-        Assertions.assertNotNull(connection.poll());
+        Assertions.assertNotNull(connection.take());
 
         testClient.disconnect();
     }

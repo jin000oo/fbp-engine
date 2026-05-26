@@ -17,7 +17,10 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +34,7 @@ class BackpressureConnectionTest {
         BackpressureConnection connection = new BackpressureConnection("connection", 1, new BackpressureStrategy() {
             @Override
             public void handle(BlockingQueue<Message> queue, Message message) throws InterruptedException {
-                BackpressureStrategy.super.handle(queue, message);
+                queue.put(message);
             }
         });
         connection.deliver(new Message(Map.of("key", 1)));
@@ -45,7 +48,7 @@ class BackpressureConnectionTest {
 
         thread.start();
 
-        boolean finished = latch.await(100, TimeUnit.MILLISECONDS);
+        boolean finished = latch.await(200, TimeUnit.MILLISECONDS);
 
         Assertions.assertFalse(finished);
 
@@ -56,12 +59,7 @@ class BackpressureConnectionTest {
     @DisplayName("DropOldest 전략")
     void test2() {
         // 큐 가득 참 + 새 메시지 → 가장 오래된 메시지 제거 확인
-        BackpressureConnection connection = new BackpressureConnection("connection", 2, new BackpressureStrategy() {
-            @Override
-            public void handle(BlockingQueue<Message> queue, Message message) throws InterruptedException {
-                BackpressureStrategy.super.handle(queue, message);
-            }
-        });
+        BackpressureConnection connection = new BackpressureConnection("connection", 2, new DropOldestStrategy());
         connection.deliver(new Message(Map.of("key", 1)));
         connection.deliver(new Message(Map.of("key", 2)));
         connection.deliver(new Message(Map.of("key", 3)));
@@ -76,12 +74,7 @@ class BackpressureConnectionTest {
     @DisplayName("DropNewest 전략")
     void test3() {
         // 큐 가득 참 + 새 메시지 → 새 메시지가 버려짐
-        BackpressureConnection connection = new BackpressureConnection("connection", 2, new BackpressureStrategy() {
-            @Override
-            public void handle(BlockingQueue<Message> queue, Message message) throws InterruptedException {
-                BackpressureStrategy.super.handle(queue, message);
-            }
-        });
+        BackpressureConnection connection = new BackpressureConnection("connection", 2, new DropNewestStrategy());
         connection.deliver(new Message(Map.of("key", 1)));
         connection.deliver(new Message(Map.of("key", 2)));
         connection.deliver(new Message(Map.of("key", 3)));
@@ -97,30 +90,24 @@ class BackpressureConnectionTest {
     @DisplayName("전략 변경")
     void test4() throws NoSuchFieldException, IllegalAccessException {
         // 런타임에 전략 변경 후 새 전략이 적용됨
-        BackpressureConnection connection = new BackpressureConnection("connection", 1, new BackpressureStrategy() {
-            @Override
-            public void handle(BlockingQueue<Message> queue, Message message) throws InterruptedException {
-                BackpressureStrategy.super.handle(queue, message);
-            }
-        });
+        BackpressureConnection connection = new BackpressureConnection("connection", 1, new DropNewestStrategy());
+        connection.deliver(new Message(Map.of("key", 1)));
+        connection.deliver(new Message(Map.of("key", 2)));
 
         Field strategyField = BackpressureConnection.class.getDeclaredField("strategy");
         strategyField.setAccessible(true);
         strategyField.set(connection, new DropOldestStrategy());
 
-        Assertions.assertEquals(2, connection.poll().getPayload().get("key"));
+        connection.deliver(new Message(Map.of("key", 3)));
+
+        Assertions.assertEquals(3, connection.poll().getPayload().get("key"));
     }
 
     @Test
     @DisplayName("큐 크기 설정")
     void test5() {
         // 생성 시 지정한 큐 용량이 적용됨
-        BackpressureConnection connection = new BackpressureConnection("connection", 3, new BackpressureStrategy() {
-            @Override
-            public void handle(BlockingQueue<Message> queue, Message message) throws InterruptedException {
-                BackpressureStrategy.super.handle(queue, message);
-            }
-        });
+        BackpressureConnection connection = new BackpressureConnection("connection", 3, new DropNewestStrategy());
         connection.deliver(new Message(Map.of("key", 1)));
         connection.deliver(new Message(Map.of("key", 2)));
         connection.deliver(new Message(Map.of("key", 3)));
@@ -133,12 +120,56 @@ class BackpressureConnectionTest {
     @DisplayName("드롭 카운트")
     void test6() {
         // DropOldest/DropNewest 전략에서 드롭된 메시지 수 메트릭
+        AtomicInteger dropCount = new AtomicInteger(0);
+        BackpressureStrategy countingStrategy = new DropOldestStrategy() {
+            @Override
+            public void handle(BlockingQueue<Message> queue, Message message) {
+                if (queue.remainingCapacity() == 0) {
+                    dropCount.incrementAndGet();
+                }
+                super.handle(queue, message);
+            }
+        };
+
+        BackpressureConnection connection = new BackpressureConnection("conn", 1, countingStrategy);
+        connection.deliver(new Message(Map.of("k", 1)));
+        connection.deliver(new Message(Map.of("k", 2)));
+        connection.deliver(new Message(Map.of("k", 3)));
+
+        Assertions.assertEquals(2, dropCount.get());
     }
 
     @Test
     @DisplayName("멀티스레드")
-    void test7() {
+    void test7() throws InterruptedException {
         // 여러 생산자 스레드에서 동시 전송 시 데이터 손실 없음
+        int threadCount = 10;
+        int messagesPerThread = 100;
+        BackpressureConnection connection =
+                new BackpressureConnection("conn", threadCount * messagesPerThread, new BackpressureStrategy() {
+                });
+
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                for (int j = 0; j < messagesPerThread; j++) {
+                    connection.deliver(new Message(Map.of("data", j)));
+                }
+                latch.countDown();
+            });
+        }
+
+        latch.await();
+        executor.shutdown();
+
+        int totalCount = 0;
+        while (connection.poll() != null) {
+            totalCount++;
+        }
+
+        Assertions.assertEquals(threadCount * messagesPerThread, totalCount);
     }
 
 }

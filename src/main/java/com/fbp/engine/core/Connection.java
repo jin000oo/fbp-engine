@@ -15,6 +15,7 @@ package com.fbp.engine.core;
 import com.fbp.engine.message.Message;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,9 +47,23 @@ public class Connection {
         }
     }
 
-    public Message poll() {
+    public Message take() {
         try {
             return buffer.take();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    }
+
+    public Message poll() {
+        return buffer.poll();
+    }
+
+    public Message poll(long timeout, TimeUnit unit) {
+        try {
+            return buffer.poll(timeout, unit);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

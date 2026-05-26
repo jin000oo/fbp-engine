@@ -48,6 +48,22 @@ public class SubFlowNode extends AbstractNode {
     @Override
     public void initialize() {
         internalFlow.initialize();
+        internalFlow.setState(Flow.State.RUNNING);
+
+        for (Connection connection : internalFlow.getConnections()) {
+            Thread t = new Thread(() -> {
+                while (internalFlow.getState() == Flow.State.RUNNING) {
+                    Message message = connection.take();
+
+                    if (message != null && connection.getTarget() != null) {
+                        connection.getTarget().receive(message);
+                    }
+                }
+            });
+
+            t.setDaemon(true);
+            t.start();
+        }
 
         AbstractNode exitNode = internalFlow.getNodes().get(exitNodeId);
 
@@ -58,7 +74,7 @@ public class SubFlowNode extends AbstractNode {
 
             bridgeThread = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
-                    Message message = connection.poll();
+                    Message message = connection.take();
 
                     if (message != null) {
                         send("out", message);
@@ -73,6 +89,7 @@ public class SubFlowNode extends AbstractNode {
 
     @Override
     public void shutdown() {
+        internalFlow.setState(Flow.State.STOPPED);
         internalFlow.shutdown();
 
         if (bridgeThread != null && bridgeThread.isAlive()) {

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +33,7 @@ public class Flow {
 
     private final Map<String, AbstractNode> nodes = new LinkedHashMap<>();
 
-    private final List<Connection> connections = new ArrayList<>();
+    private final List<Connection> connections = new CopyOnWriteArrayList<>();
 
     private final Map<String, List<String>> adjacencyList = new HashMap<>();
 

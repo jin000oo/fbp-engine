@@ -141,7 +141,7 @@ class ConnectionTest {
         final Message[] received = {null};
 
         Thread consumer = new Thread(() -> {
-            received[0] = connection.poll();
+            received[0] = connection.take();
             countDownLatch.countDown();
         });
         consumer.start();
@@ -164,7 +164,7 @@ class ConnectionTest {
         Connection connection = new Connection("connection-1");
 
         Thread consumer = new Thread(() -> {
-            connection.poll();
+            connection.take();
             isBlocked = false;
         });
         consumer.start();

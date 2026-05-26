@@ -136,7 +136,7 @@ class MqttSubscriberNodeTest {
 
         client.disconnect();
 
-        Message message = connection.poll();
+        Message message = connection.take();
 
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(message),

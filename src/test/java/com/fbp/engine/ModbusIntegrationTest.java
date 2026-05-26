@@ -86,7 +86,7 @@ class ModbusIntegrationTest {
         engine.register(flow);
         engine.startFlow(flow.getId());
 
-        Message msg = connection.poll();
+        Message msg = connection.take();
 
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(msg),

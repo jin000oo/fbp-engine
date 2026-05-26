@@ -37,6 +37,10 @@ public abstract class AbstractNode implements Node {
         outputPorts.put(name, new DefaultOutputPort(name));
     }
 
+    public void addErrorPort() {
+        outputPorts.put("error", new ErrorPort());
+    }
+
     public InputPort getInputPort(String name) {
         return inputPorts.get(name);
     }
@@ -67,11 +71,26 @@ public abstract class AbstractNode implements Node {
 
         } catch (Exception e) {
             success = false;
+            sendError(message, e);
 
         } finally {
             long durationNs = System.nanoTime() - startNs;
 
             MetricsCollector.getInstance().recordProcessing(getId(), durationNs, success);
+        }
+    }
+
+    private void sendError(Message originalMessage, Exception e) {
+        OutputPort errorPort = outputPorts.get("error");
+
+        if (errorPort != null) {
+            Map<String, Object> errorPayload = new HashMap<>(originalMessage.getPayload());
+
+            errorPayload.put("_error", e.getMessage());
+            errorPayload.put("_nodeId", id);
+            errorPayload.put("_exception", e.getClass().getName());
+
+            errorPort.send(new Message(errorPayload));
         }
     }
 

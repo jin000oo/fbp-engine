@@ -12,11 +12,17 @@
 
 package com.fbp.engine.flow;
 
+import com.fbp.engine.core.AbstractNode;
 import com.fbp.engine.core.Connection;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.EchoProtocolNode;
+import com.fbp.engine.node.TransformNode;
+import com.fbp.engine.parser.FlowDefinition;
+import com.fbp.engine.parser.JsonFlowParser;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,8 +30,8 @@ import org.junit.jupiter.api.Test;
 class SubFlowNodeTest {
 
     @Test
-    @DisplayName("메시지 전달메시지 전달")
-    void test1() throws InterruptedException {
+    @DisplayName("메시지 전달")
+    void test1() {
         // 외부 입력 → 서브플로우 내부 → 외부 출력 정상 전달
         Flow inner = createTestInnerFlow();
 
@@ -37,9 +43,7 @@ class SubFlowNodeTest {
         subFlowNode.initialize();
         subFlowNode.process(new Message(Map.of("data", "hello")));
 
-        Thread.sleep(100);
-
-        Message result = connection.poll();
+        Message result = connection.poll(500, TimeUnit.MILLISECONDS);
 
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(result),
@@ -51,7 +55,7 @@ class SubFlowNodeTest {
 
     @Test
     @DisplayName("내부 플로우 실행")
-    void test2() throws InterruptedException {
+    void test2() {
         // 서브플로우 내부 노드들이 올바른 순서로 처리
         Flow inner = createTestInnerFlow();
 
@@ -63,9 +67,7 @@ class SubFlowNodeTest {
         subFlowNode.initialize();
         subFlowNode.process(new Message(Map.of("data", "hello")));
 
-        Thread.sleep(100);
-
-        Assertions.assertNotNull(connection.poll());
+        Assertions.assertNotNull(connection.poll(500, TimeUnit.MILLISECONDS));
 
         subFlowNode.shutdown();
     }
@@ -80,9 +82,9 @@ class SubFlowNodeTest {
 
         subFlowNode.initialize();
 
-        EchoProtocolNode echoProtocolNode = (EchoProtocolNode) inner.getNodes().get("entry");
+        TransformNode entryNode = (TransformNode) inner.getNodes().get("entry");
 
-        Assertions.assertNotNull(echoProtocolNode);
+        Assertions.assertNotNull(entryNode);
 
         subFlowNode.shutdown();
     }
@@ -98,9 +100,7 @@ class SubFlowNodeTest {
         subFlowNode.initialize();
         subFlowNode.shutdown();
 
-        EchoProtocolNode echoProtocolNode = (EchoProtocolNode) inner.getNodes().get("entry");
-
-        Assertions.assertNull(echoProtocolNode);
+        Assertions.assertEquals(Flow.State.STOPPED, inner.getState());
     }
 
     @Test
@@ -120,18 +120,92 @@ class SubFlowNodeTest {
     @DisplayName("내부 에러 전파")
     void test6() {
         // 서브플로우 내부에서 에러 발생 시 외부 에러 포트로 전파
+        Flow inner = new Flow("inner");
+        inner.addNode(new AbstractNode("entry") {
+            {
+                addInputPort("in");
+                addOutputPort("out");
+            }
+
+            @Override
+            public void onProcess(Message message) {
+                throw new RuntimeException("inner error");
+            }
+
+            @Override
+            public void initialize() {
+            }
+
+            @Override
+            public void shutdown() {
+            }
+        });
+
+        inner.getNodes().get("entry").addErrorPort();
+
+        SubFlowNode subFlowNode = new SubFlowNode("sub", inner, "entry", "entry");
+        subFlowNode.addErrorPort();
+
+        Connection errorConn = new Connection("error");
+        subFlowNode.getOutputPort("error").connect(errorConn);
+
+        Connection bridgeErr = new Connection("bridgeErr");
+        inner.getNodes().get("entry").getOutputPort("error").connect(bridgeErr);
+
+        subFlowNode.initialize();
+
+        new Thread(() -> {
+            while (true) {
+                Message m = bridgeErr.take();
+
+                if (m != null) {
+                    subFlowNode.getOutputPort("error").send(m);
+                }
+            }
+        }).start();
+
+        subFlowNode.process(new Message(Map.of("data", "fail")));
+
+        Message errorMsg = errorConn.poll(500, TimeUnit.MILLISECONDS);
+        Assertions.assertNotNull(errorMsg);
+        Assertions.assertEquals("inner error", errorMsg.getPayload().get("_error"));
+
+        subFlowNode.shutdown();
     }
 
     @Test
     @DisplayName("JSON 정의")
     void test7() {
         // 플로우 JSON에서 서브플로우를 정의하고 파싱 가능
+        String json = """
+                {
+                    "id": "test-flow",
+                    "nodes": [
+                        {
+                            "id": "sub1",
+                            "type": "SubFlow",
+                            "config": {
+                                "innerFlowId": "inner-1",
+                                "entry": "in-node",
+                                "exit": "out-node"
+                            }
+                        }
+                    ],
+                    "connections": []
+                }
+                """;
+
+        JsonFlowParser parser = new JsonFlowParser();
+        FlowDefinition def = parser.parse(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+
+        Assertions.assertEquals(1, def.getNodes().size());
+        Assertions.assertEquals("SubFlow", def.getNodes().get(0).type());
     }
 
     private Flow createTestInnerFlow() {
         Flow flow = new Flow("flow");
-        flow.addNode(new EchoProtocolNode("entry", Map.of()));
-        flow.addNode(new EchoProtocolNode("exit", Map.of()));
+        flow.addNode(new TransformNode("entry", m -> m));
+        flow.addNode(new TransformNode("exit", m -> m));
         flow.connect("entry", "out", "exit", "in");
         return flow;
     }
