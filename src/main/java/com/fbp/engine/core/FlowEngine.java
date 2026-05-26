@@ -12,12 +12,15 @@
 
 package com.fbp.engine.core;
 
+import com.fbp.engine.flow.ThreadPoolConfig;
 import com.fbp.engine.message.Message;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 
 public class FlowEngine {
@@ -32,7 +35,20 @@ public class FlowEngine {
     @Getter
     private final Map<String, Flow> flows = new ConcurrentHashMap<>();
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(10);
+    private final ExecutorService executor;
+
+    public FlowEngine() {
+        this(ThreadPoolConfig.builder().build());
+    }
+
+    public FlowEngine(ThreadPoolConfig config) {
+        this.executor = new ThreadPoolExecutor(
+                config.getCorePoolSize(),
+                config.getMaxPoolSize(),
+                60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(config.getQueueCapacity())
+        );
+    }
 
     public void register(Flow flow) {
         flows.put(flow.getId(), flow);
@@ -57,7 +73,7 @@ public class FlowEngine {
         for (Connection connection : flow.getConnections()) {
             executor.submit(() -> {
                 while (flow.getState() == Flow.State.RUNNING) {
-                    Message message = connection.poll();
+                    Message message = connection.take();
 
                     if (message != null && connection.getTarget() != null) {
                         connection.getTarget().receive(message);

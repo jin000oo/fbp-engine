@@ -10,22 +10,20 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.core;
+package com.fbp.engine.integration.performance;
 
-import com.fbp.engine.message.Message;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
-public interface Node {
-
-    String getId();
-
-    void process(Message message);
-
-    default void receive(Message message) {
-        process(message);
-    }
-
-    void initialize();
-
-    void shutdown();
-
+@Getter
+@Builder
+@ToString
+public class PerformanceResult {
+    private long totalMessages;
+    private long durationMs;
+    private double throughput;
+    private double averageLatencyMs;
+    private long errorCount;
+    private double errorRate;
 }

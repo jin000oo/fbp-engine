@@ -10,7 +10,7 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine;
+package com.fbp.engine.integration;
 
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;

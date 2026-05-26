@@ -10,22 +10,22 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  */
 
-package com.fbp.engine.core;
+package com.fbp.engine.flow;
 
-import com.fbp.engine.message.Message;
+import lombok.Builder;
+import lombok.Getter;
 
-public interface Node {
+@Getter
+@Builder
+public class ThreadPoolConfig {
 
-    String getId();
+    @Builder.Default
+    private int corePoolSize = 10;
 
-    void process(Message message);
+    @Builder.Default
+    private int maxPoolSize = 20;
 
-    default void receive(Message message) {
-        process(message);
-    }
-
-    void initialize();
-
-    void shutdown();
+    @Builder.Default
+    private int queueCapacity = 1000;
 
 }

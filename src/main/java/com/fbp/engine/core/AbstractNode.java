@@ -29,7 +29,7 @@ public abstract class AbstractNode implements Node {
 
     private final Map<String, OutputPort> outputPorts = new HashMap<>();
 
-    protected void addInputPort(String name) {
+    public void addInputPort(String name) {
         inputPorts.put(name, new DefaultInputPort(name, this));
     }
 

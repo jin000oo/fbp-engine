@@ -26,6 +26,10 @@ public class CounterNode extends AbstractNode {
         addOutputPort("out");
     }
 
+    public int getCount() {
+        return count.get();
+    }
+
     @Override
     public void onProcess(Message message) {
         int currentCount = count.incrementAndGet();
