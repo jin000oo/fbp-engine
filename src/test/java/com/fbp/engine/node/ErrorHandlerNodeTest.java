@@ -139,14 +139,42 @@ class ErrorHandlerNodeTest {
     @DisplayName("재시도 로직")
     void test6() {
         // ErrorHandlerNode에서 재시도 설정 시 원래 노드로 재전달
-        // 현재 ErrorHandlerNode에는 재시도 로직이 없으므로 개념적 테스트만
+        ErrorHandlerNode handler = new ErrorHandlerNode("handler", 2);
+        Connection retryConn = new Connection("retry");
+        handler.getOutputPort("retry").connect(retryConn);
+
+        handler.onProcess(new Message(Map.of("data", "test")));
+        Message retry1 = retryConn.poll();
+        Assertions.assertNotNull(retry1);
+        Assertions.assertEquals(1, retry1.getPayload().get("_retryCount"));
+
+        handler.onProcess(retry1);
+        Message retry2 = retryConn.poll();
+        Assertions.assertNotNull(retry2);
+        Assertions.assertEquals(2, retry2.getPayload().get("_retryCount"));
+
+        handler.onProcess(retry2);
+        Assertions.assertNull(retryConn.poll());
     }
 
     @Test
     @DisplayName("DeadLetterNode")
     void test7() {
         // 재시도 초과 시 DeadLetterNode로 전달
-        // 현재 로직상 미구현이므로 스킵 또는 기본 동작 확인
+        ErrorHandlerNode handler = new ErrorHandlerNode("handler", 1);
+        Connection dlConn = new Connection("dl");
+        handler.getOutputPort("deadLetter").connect(dlConn);
+
+        Message msg = new Message(Map.of("data", "fail"));
+        handler.onProcess(msg);
+        Assertions.assertNull(dlConn.poll()); // 아직 재시도 중
+
+        Message retryMsg = new Message(Map.of("data", "fail", "_retryCount", 1));
+        handler.onProcess(retryMsg);
+
+        Message finalMsg = dlConn.poll();
+        Assertions.assertNotNull(finalMsg);
+        Assertions.assertEquals(1, finalMsg.getPayload().get("_retryCount"));
     }
 
 }
