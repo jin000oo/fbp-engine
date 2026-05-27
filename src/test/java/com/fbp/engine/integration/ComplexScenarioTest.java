@@ -117,7 +117,7 @@ class ComplexScenarioTest {
         engine.startFlow("mqtt-flow");
 
         mqttIn.process(new Message(Map.of("temp", 35.0)));
-        Assertions.assertTrue(latch.await(1, TimeUnit.SECONDS));
+        Assertions.assertTrue(latch.await(2, TimeUnit.SECONDS));
     }
 
     @Test

@@ -31,7 +31,7 @@ class SubFlowNodeTest {
 
     @Test
     @DisplayName("메시지 전달")
-    void test1() {
+    void test1() throws InterruptedException {
         // 외부 입력 → 서브플로우 내부 → 외부 출력 정상 전달
         Flow inner = createTestInnerFlow();
 
@@ -43,7 +43,8 @@ class SubFlowNodeTest {
         subFlowNode.initialize();
         subFlowNode.process(new Message(Map.of("data", "hello")));
 
-        Message result = connection.poll(500, TimeUnit.MILLISECONDS);
+        Thread.sleep(500);
+        Message result = connection.poll();
 
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(result),

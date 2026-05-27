@@ -39,8 +39,30 @@ public class BackpressureConnection extends Connection {
     }
 
     @Override
+    public Message take() {
+        try {
+            return blockingQueue.take();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    }
+
+    @Override
     public Message poll() {
         return blockingQueue.poll();
+    }
+
+    @Override
+    public Message poll(long timeout, java.util.concurrent.TimeUnit unit) {
+        try {
+            return blockingQueue.poll(timeout, unit);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
     }
 
     @Override

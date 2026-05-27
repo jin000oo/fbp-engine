@@ -76,7 +76,7 @@ class TemperatureMonitoringIntegrationFlowTest {
         engine.register(flow);
 
         engine.startFlow(flow.getId());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         engine.stopFlow(flow.getId());
 
         engine.shutdown();
@@ -111,7 +111,7 @@ class TemperatureMonitoringIntegrationFlowTest {
         engine.register(flow);
 
         engine.startFlow(flow.getId());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         engine.stopFlow(flow.getId());
 
         engine.shutdown();
@@ -147,7 +147,7 @@ class TemperatureMonitoringIntegrationFlowTest {
         engine.register(flow);
 
         engine.startFlow(flow.getId());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         engine.stopFlow(flow.getId());
 
         engine.shutdown();

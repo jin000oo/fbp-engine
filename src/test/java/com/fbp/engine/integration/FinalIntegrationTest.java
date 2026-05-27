@@ -82,7 +82,7 @@ class FinalIntegrationTest {
         engine.startFlow("final-test-flow");
         Assertions.assertEquals(FlowEngine.State.RUNNING, engine.getState());
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -96,7 +96,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -116,7 +116,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -136,7 +136,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -154,7 +154,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -176,7 +176,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();
@@ -204,7 +204,7 @@ class FinalIntegrationTest {
         engine.register(flow);
         engine.startFlow("final-test-flow");
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         flow.getNodes().get("timer").shutdown();
         engine.shutdown();

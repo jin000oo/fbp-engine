@@ -53,6 +53,10 @@ public class Flow {
     }
 
     public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort) {
+        return connect(sourceNodeId, sourcePort, targetNodeId, targetPort, new DropOldestStrategy());
+    }
+
+    public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort, BackpressureStrategy strategy) {
         AbstractNode source = nodes.get(sourceNodeId);
         if (source == null) {
             throw new IllegalArgumentException("존재하지 않는 소스 노드");
@@ -74,7 +78,7 @@ public class Flow {
         }
 
         String connectionId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
-        Connection connection = new Connection(connectionId);
+        Connection connection = new BackpressureConnection(connectionId, 100, strategy);
         connection.setTarget(in);
         out.connect(connection);
 
