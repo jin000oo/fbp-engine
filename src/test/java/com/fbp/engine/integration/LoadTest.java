@@ -178,7 +178,6 @@ class LoadTest {
             public void shutdown() {
             }
         };
-        slowConsumer.addInputPort("in");
 
         Flow flow = new Flow("queue-backlog").addNode(producer).addNode(slowConsumer);
         BackpressureConnection conn = new BackpressureConnection("conn", 100, new DropOldestStrategy());

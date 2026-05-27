@@ -234,7 +234,6 @@ class ComplexScenarioTest {
             public void shutdown() {
             }
         };
-        consumer.addInputPort("in");
 
         flow.addNode(producer).addNode(consumer);
 
