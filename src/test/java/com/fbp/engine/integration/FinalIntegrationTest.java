@@ -23,7 +23,6 @@ import com.fbp.engine.node.TemperatureSensorNode;
 import com.fbp.engine.node.ThresholdFilterNode;
 import com.fbp.engine.node.TimerNode;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 class FinalIntegrationTest {
 
-    String TEST_FILE_PATH = "test.log";
+    static final String TEST_FILE_PATH = "test.log";
 
     FlowEngine engine;
 
@@ -150,7 +149,7 @@ class FinalIntegrationTest {
 
     @Test
     @DisplayName("파일 기록 검증")
-    void test5() throws IOException, InterruptedException {
+    void test5() throws InterruptedException {
         // FileWriterNode가 기록한 파일의 줄 수 = normal 경로 메시지 수
         engine.register(flow);
         engine.startFlow("final-test-flow");

@@ -14,6 +14,8 @@ package com.fbp.engine.integration;
 
 import com.fbp.engine.api.HttpApiServer;
 import com.fbp.engine.core.FlowEngine;
+import com.fbp.engine.engine.FlowManager;
+import com.fbp.engine.message.Message;
 import com.fbp.engine.node.PrintNode;
 import com.fbp.engine.node.TransformNode;
 import com.fbp.engine.registry.NodeRegistry;
@@ -45,7 +47,7 @@ class RestApiIntegrationTest {
         registry.register("Transform", (id, config) -> new TransformNode(id, m -> m));
         registry.register("Print", (id, config) -> new PrintNode(id));
 
-        com.fbp.engine.engine.FlowManager flowManager = new com.fbp.engine.engine.FlowManager(engine, registry);
+        FlowManager flowManager = new FlowManager(engine, registry);
         server = new HttpApiServer(8083, flowManager);
         server.start();
     }
@@ -110,7 +112,7 @@ class RestApiIntegrationTest {
         // 알려진 수의 메시지를 보낸 후 메트릭의 처리 건수가 일치
         test2();
 
-        engine.getFlows().get("run-test").getNodes().get("n1").receive(new com.fbp.engine.message.Message(Map.of()));
+        engine.getFlows().get("run-test").getNodes().get("n1").process(new Message(Map.of()));
         Thread.sleep(100);
 
         var req = HttpRequest.newBuilder().uri(URI.create("http://localhost:8083" + "/flows/run-test/metrics")).GET()

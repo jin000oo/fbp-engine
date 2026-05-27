@@ -12,18 +12,16 @@
 
 package com.fbp.engine.integration.performance;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+public record PerformanceResult(long totalMessages,
+                                long durationMs,
+                                double throughput,
+                                double averageLatencyMs,
+                                long errorCount,
+                                double errorRate) {
 
-@Getter
-@Builder
-@ToString
-public class PerformanceResult {
-    private long totalMessages;
-    private long durationMs;
-    private double throughput;
-    private double averageLatencyMs;
-    private long errorCount;
-    private double errorRate;
+    public PerformanceResult(long totalMessages, long durationMs, double throughput, long errorCount,
+                             double errorRate) {
+        this(totalMessages, durationMs, throughput, 0, errorCount, errorRate);
+    }
+
 }

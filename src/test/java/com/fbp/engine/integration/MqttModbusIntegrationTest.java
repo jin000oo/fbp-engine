@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("integration")
-public class MqttModbusIntegrationTest {
+class MqttModbusIntegrationTest {
     // MQTT↔MODBUS 통합 플로우
 
     ModbusTcpSimulator simulator;

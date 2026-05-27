@@ -20,10 +20,6 @@ public interface Node {
 
     void process(Message message);
 
-    default void receive(Message message) {
-        process(message);
-    }
-
     void initialize();
 
     void shutdown();

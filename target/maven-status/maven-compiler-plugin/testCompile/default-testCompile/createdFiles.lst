@@ -1,8 +1,7 @@
-com/fbp/engine/integration/MemoryMonitor.class
 com/fbp/engine/integration/MqttModbusIntegrationTest.class
 com/fbp/engine/node/ErrorHandlerNodeTest$1.class
 com/fbp/engine/integration/ComplexScenarioTest$2.class
-com/fbp/engine/integration/PerformanceResult$PerformanceResultBuilder.class
+com/fbp/engine/integration/performance/LoadTester.class
 com/fbp/engine/integration/TemperatureMonitoringIntegrationFlowTest.class
 com/fbp/engine/core/ProtocolNodeTest$DummyProtocolNode.class
 com/fbp/engine/flow/SubFlowNodeTest$1.class
@@ -17,8 +16,6 @@ com/fbp/engine/integration/CrossProtocolIntegrationTest.class
 com/fbp/engine/node/ErrorHandlerNodeTest$ExceptionNode.class
 com/fbp/engine/integration/ComplexScenarioTest$1.class
 com/fbp/engine/integration/LoadTest$1.class
-com/fbp/engine/integration/LoadTester.class
 com/fbp/engine/integration/ComplexScenarioTest.class
 com/fbp/engine/integration/MqttIntegrationTest.class
 com/fbp/engine/integration/LoadTest.class
-com/fbp/engine/integration/PerformanceResult.class

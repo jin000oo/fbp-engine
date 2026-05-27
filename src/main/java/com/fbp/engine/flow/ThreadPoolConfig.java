@@ -12,20 +12,16 @@
 
 package com.fbp.engine.flow;
 
-import lombok.Builder;
-import lombok.Getter;
+public record ThreadPoolConfig(int corePoolSize,
+                               int maxPoolSize,
+                               int queueCapacity) {
 
-@Getter
-@Builder
-public class ThreadPoolConfig {
+    public ThreadPoolConfig() {
+        this(10, 20, 1000);
+    }
 
-    @Builder.Default
-    private int corePoolSize = 10;
-
-    @Builder.Default
-    private int maxPoolSize = 20;
-
-    @Builder.Default
-    private int queueCapacity = 1000;
+    public ThreadPoolConfig(int corePoolSize, int maxPoolSize) {
+        this(corePoolSize, maxPoolSize, 1000);
+    }
 
 }

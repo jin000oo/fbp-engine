@@ -42,7 +42,7 @@ public class PluginManager {
         }
 
         if (!jarUrls.isEmpty()) {
-            ServiceLoader<NodeProvider> externalLoader = ServiceLoader.load(NodeProvider.class);
+            ServiceLoader<NodeProvider> externalLoader = ServiceLoader.load(NodeProvider.class, pluginClassLoader);
             registerProviders(externalLoader);
         }
     }

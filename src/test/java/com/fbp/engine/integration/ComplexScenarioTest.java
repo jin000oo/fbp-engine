@@ -67,7 +67,7 @@ class ComplexScenarioTest {
 
     @Test
     @DisplayName("JSON 플로우 배포")
-    void test1() throws Exception {
+    void test1() {
         // JSON 파일에서 플로우 정의 읽기 → 배포 → RUNNING 상태
         String json = """
                 {
@@ -116,7 +116,7 @@ class ComplexScenarioTest {
         engine.register(flow);
         engine.startFlow("mqtt-flow");
 
-        mqttIn.receive(new Message(Map.of("temp", 35.0)));
+        mqttIn.process(new Message(Map.of("temp", 35.0)));
         Assertions.assertTrue(latch.await(1, TimeUnit.SECONDS));
     }
 
@@ -139,9 +139,9 @@ class ComplexScenarioTest {
         engine.register(flow);
         engine.startFlow("router-flow");
 
-        router.receive(new Message(Map.of("type", "A")));
-        router.receive(new Message(Map.of("type", "B")));
-        router.receive(new Message(Map.of("type", "A")));
+        router.process(new Message(Map.of("type", "A")));
+        router.process(new Message(Map.of("type", "B")));
+        router.process(new Message(Map.of("type", "A")));
 
         Thread.sleep(100);
         Assertions.assertEquals(2, counterA.getCount());
@@ -176,7 +176,7 @@ class ComplexScenarioTest {
         engine.register(flow);
         engine.startFlow("error-flow");
 
-        errorNode.receive(new Message(Map.of()));
+        errorNode.process(new Message(Map.of()));
         Thread.sleep(100);
         Assertions.assertEquals(1, errorCounter.getCount());
     }
@@ -206,7 +206,7 @@ class ComplexScenarioTest {
         engine.register(outer);
         engine.startFlow("outer");
 
-        subFlow.receive(new Message(Map.of("data", "test")));
+        subFlow.process(new Message(Map.of("data", "test")));
         Assertions.assertTrue(latch.await(1, TimeUnit.SECONDS));
     }
 
@@ -246,7 +246,7 @@ class ComplexScenarioTest {
         engine.startFlow("bp-flow");
 
         for (int i = 0; i < 10; i++) {
-            producer.receive(new Message(Map.of("v", i)));
+            producer.process(new Message(Map.of("v", i)));
         }
 
         Thread.sleep(500);
@@ -281,7 +281,7 @@ class ComplexScenarioTest {
         engine.register(flow);
         engine.startFlow("metrics-flow");
 
-        node.receive(new Message(Map.of()));
+        node.process(new Message(Map.of()));
         Thread.sleep(100);
 
         var metrics = MetricsCollector.getInstance().getNodeMetrics("node");

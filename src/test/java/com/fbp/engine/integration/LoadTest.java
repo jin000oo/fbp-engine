@@ -40,10 +40,7 @@ class LoadTest {
 
     @BeforeEach
     void setUp() {
-        engine = new FlowEngine(ThreadPoolConfig.builder()
-                .corePoolSize(50)
-                .maxPoolSize(100)
-                .build());
+        engine = new FlowEngine(new ThreadPoolConfig(50, 100));
     }
 
     @AfterEach
@@ -74,7 +71,7 @@ class LoadTest {
         PerformanceResult result = tester.run(messageCount);
 
         latch.await(10, TimeUnit.SECONDS);
-        Assertions.assertTrue(result.getThroughput() >= 1000);
+        Assertions.assertTrue(result.throughput() >= 1000);
     }
 
     @Test
@@ -98,7 +95,7 @@ class LoadTest {
         engine.startFlow("latency-flow");
 
         for (int i = 0; i < messageCount; i++) {
-            entry.receive(new Message(java.util.Map.of("timestamp", System.nanoTime())));
+            entry.process(new Message(java.util.Map.of("timestamp", System.nanoTime())));
         }
 
         Thread.sleep(500);
@@ -116,7 +113,7 @@ class LoadTest {
         LoadTester tester = new LoadTester(entry);
         PerformanceResult result = tester.run(messageCount);
 
-        Assertions.assertTrue(result.getErrorRate() < 0.001);
+        Assertions.assertTrue(result.errorRate() < 0.001);
     }
 
     @Test
@@ -133,7 +130,7 @@ class LoadTest {
 
         long endTime = System.currentTimeMillis() + 5000;
         while (System.currentTimeMillis() < endTime) {
-            entry.receive(new Message(java.util.Map.of("d", "v")));
+            entry.process(new Message(java.util.Map.of("d", "v")));
             Thread.sleep(1);
         }
 
@@ -189,7 +186,7 @@ class LoadTest {
         engine.startFlow("queue-backlog");
 
         for (int i = 0; i < 200; i++) {
-            producer.receive(new Message(java.util.Map.of("i", i)));
+            producer.process(new Message(java.util.Map.of("i", i)));
         }
 
         Assertions.assertTrue(conn.getBufferSize() <= 100);

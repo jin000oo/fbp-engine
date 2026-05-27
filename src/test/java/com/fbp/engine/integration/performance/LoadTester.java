@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LoadTester {
 
     private final Node targetNode;
+
     private final AtomicLong sentCount = new AtomicLong(0);
+
     private final AtomicLong errorCount = new AtomicLong(0);
 
     public LoadTester(Node targetNode) {
@@ -32,8 +34,9 @@ public class LoadTester {
 
         for (int i = 0; i < messageCount; i++) {
             try {
-                targetNode.receive(new Message(Map.of("data", i, "timestamp", System.nanoTime())));
+                targetNode.process(new Message(Map.of("data", i, "timestamp", System.nanoTime())));
                 sentCount.incrementAndGet();
+
             } catch (Exception e) {
                 errorCount.incrementAndGet();
             }
@@ -45,13 +48,13 @@ public class LoadTester {
 
         double throughput = (double) sentCount.get() / (durationNs / 1_000_000_000.0);
 
-        return PerformanceResult.builder()
-                .totalMessages(sentCount.get())
-                .durationMs(durationMs)
-                .throughput(throughput)
-                .errorCount(errorCount.get())
-                .errorRate((double) errorCount.get() / messageCount)
-                .build();
+        return new PerformanceResult(
+                sentCount.get(),
+                durationMs,
+                throughput,
+                errorCount.get(),
+                (double) errorCount.get() / messageCount
+        );
     }
 
 }

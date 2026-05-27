@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemoryMonitor {
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
     private final List<Long> heapUsageHistory = new ArrayList<>();
 
     public void start(long intervalMs) {
@@ -42,10 +43,15 @@ public class MemoryMonitor {
         if (heapUsageHistory.size() < 2) {
             return false;
         }
-        double firstHalfAvg =
-                heapUsageHistory.stream().limit(heapUsageHistory.size() / 2).mapToLong(Long::longValue).average()
-                        .orElse(0);
+
+        double firstHalfAvg = heapUsageHistory.stream()
+                .limit(heapUsageHistory.size() / 2)
+                .mapToLong(Long::longValue)
+                .average()
+                .orElse(0);
+
         long lastValue = heapUsageHistory.get(heapUsageHistory.size() - 1);
+
         return lastValue > firstHalfAvg * 1.5;
     }
 

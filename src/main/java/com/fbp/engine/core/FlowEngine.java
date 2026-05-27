@@ -38,15 +38,15 @@ public class FlowEngine {
     private final ExecutorService executor;
 
     public FlowEngine() {
-        this(ThreadPoolConfig.builder().build());
+        this(new ThreadPoolConfig(10, 20, 1000));
     }
 
     public FlowEngine(ThreadPoolConfig config) {
         this.executor = new ThreadPoolExecutor(
-                config.getCorePoolSize(),
-                config.getMaxPoolSize(),
+                config.corePoolSize(),
+                config.maxPoolSize(),
                 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(config.getQueueCapacity())
+                new LinkedBlockingQueue<>(config.queueCapacity())
         );
     }
 

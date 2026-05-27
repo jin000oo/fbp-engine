@@ -1,15 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.fbp.engine.node.FileWriterNodeTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.008 s <<< FAILURE! -- in com.fbp.engine.node.FileWriterNodeTest
-com.fbp.engine.node.FileWriterNodeTest.test3 -- Time elapsed: 0.003 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: Expected java.lang.RuntimeException to be thrown, but nothing was thrown.
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3128)
-	at com.fbp.engine.node.FileWriterNodeTest.test3(FileWriterNodeTest.java:73)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.fbp.engine.node.FileWriterNodeTest

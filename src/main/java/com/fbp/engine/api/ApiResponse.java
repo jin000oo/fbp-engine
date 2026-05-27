@@ -21,10 +21,10 @@ import java.util.Map;
 
 public class ApiResponse {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void send(HttpExchange exchange, int statusCode, Object data) throws IOException {
-        String json = mapper.writeValueAsString(data);
+        String json = objectMapper.writeValueAsString(data);
         byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
 
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
