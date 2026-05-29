@@ -13,8 +13,11 @@
 package com.fbp.engine.metrics;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,12 +27,18 @@ public class MetricsCollector {
 
     private final Map<String, NodeMetrics> nodeMetricsMap = new ConcurrentHashMap<>();
 
+    @Getter
+    private final BlockingQueue<MetricEvent> eventQueue = new LinkedBlockingQueue<>(10000);
+
     public static MetricsCollector getInstance() {
         return INSTANCE;
     }
 
     public void recordProcessing(String nodeId, long durationNs, boolean success) {
         nodeMetricsMap.computeIfAbsent(nodeId, n -> new NodeMetrics()).record(durationNs, success);
+
+        MetricEvent event = new MetricEvent(nodeId, durationNs, success, System.currentTimeMillis());
+        eventQueue.offer(event);
     }
 
     public NodeMetrics getNodeMetrics(String nodeId) {

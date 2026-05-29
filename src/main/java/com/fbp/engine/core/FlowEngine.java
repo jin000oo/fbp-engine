@@ -14,6 +14,10 @@ package com.fbp.engine.core;
 
 import com.fbp.engine.flow.ThreadPoolConfig;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.InfluxDBConfig;
+import com.fbp.engine.metrics.InfluxDBWriter;
+import com.fbp.engine.metrics.MetricWorker;
+import com.fbp.engine.metrics.MetricsCollector;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,17 +41,36 @@ public class FlowEngine {
 
     private final ExecutorService executor;
 
-    public FlowEngine() {
-        this(new ThreadPoolConfig(10, 20, 1000));
+    private final InfluxDBConfig config;
+
+    private final InfluxDBWriter writer;
+
+    private final MetricWorker worker;
+
+    private Thread workerThread;
+
+    public FlowEngine() {   // 테스트 코드 수정 귀찮아서 일단 더미 설정..
+        this(new ThreadPoolConfig(10, 20, 1000),
+                new InfluxDBConfig("http://localhost:8086", "token", "org", "bucket"));
     }
 
-    public FlowEngine(ThreadPoolConfig config) {
+    public FlowEngine(InfluxDBConfig config) {
+        this(new ThreadPoolConfig(10, 20, 1000), config);
+    }
+
+    public FlowEngine(ThreadPoolConfig threadPoolConfig, InfluxDBConfig config) {
         this.executor = new ThreadPoolExecutor(
-                config.corePoolSize(),
-                config.maxPoolSize(),
+                threadPoolConfig.corePoolSize(),
+                threadPoolConfig.maxPoolSize(),
                 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(config.queueCapacity())
+                new LinkedBlockingQueue<>(threadPoolConfig.queueCapacity())
         );
+        this.config = config;
+        this.writer = new InfluxDBWriter(config);
+        this.worker = new MetricWorker(config, writer, MetricsCollector.getInstance().getEventQueue());
+        this.workerThread = new Thread(worker, "metric-worker-thread");
+        this.workerThread.setDaemon(true);
+        this.workerThread.start();
     }
 
     public void register(Flow flow) {
@@ -110,6 +133,21 @@ public class FlowEngine {
     }
 
     public void shutdown() {
+        if (worker != null) {
+            worker.stop();
+
+            try {
+                workerThread.join(3000);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        if (writer != null) {
+            writer.close();
+        }
+
         for (Flow flow : flows.values()) {
             flow.shutdown();
             flow.setState(Flow.State.STOPPED);
