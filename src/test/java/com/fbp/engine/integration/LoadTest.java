@@ -17,7 +17,6 @@ import com.fbp.engine.core.BackpressureConnection;
 import com.fbp.engine.core.DropOldestStrategy;
 import com.fbp.engine.core.Flow;
 import com.fbp.engine.core.FlowEngine;
-import com.fbp.engine.flow.ThreadPoolConfig;
 import com.fbp.engine.integration.performance.LoadTester;
 import com.fbp.engine.integration.performance.MemoryMonitor;
 import com.fbp.engine.integration.performance.PerformanceResult;
@@ -40,7 +39,7 @@ class LoadTest {
 
     @BeforeEach
     void setUp() {
-        engine = new FlowEngine(new ThreadPoolConfig(50, 100));
+        engine = new FlowEngine();
     }
 
     @AfterEach
